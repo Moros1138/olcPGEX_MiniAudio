@@ -27,3 +27,11 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
+
+
+Music License for Example
+~~~~~~~~~~~~~~~
+
+Music: Joy Ride [Full version] by MusicLFiles
+Free download: https://filmmusic.io/song/11627-joy-ride-full-version
+Licensed under CC BY 4.0: https://filmmusic.io/standard-license
