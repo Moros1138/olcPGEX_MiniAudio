@@ -1,0 +1,3 @@
+[submodule "miniaudio"]
+	path = third_party/miniaudio
+	url = https://github.com/mackron/miniaudio
