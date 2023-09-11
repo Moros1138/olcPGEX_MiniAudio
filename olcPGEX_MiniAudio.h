@@ -75,6 +75,7 @@ namespace olc
         void Pause(const int id);
         void Toggle(const int id, bool rewind = false);
 
+        void SetVolume(const int id, const float volume);
         std::vector<ma_sound*> vecSounds;
 
     private:        
@@ -241,6 +242,13 @@ namespace olc
         }
         
         ma_sound_start(vecSounds.at(id));
+    }
+    
+    void MiniAudio::SetVolume(const int id, const float volume)
+    {
+        ma_sound_set_volume(vecSounds.at(id), volume);
+        
+        
     }
 
 } // olc
