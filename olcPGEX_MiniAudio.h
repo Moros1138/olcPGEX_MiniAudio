@@ -76,6 +76,7 @@ namespace olc
         void Toggle(const int id, bool rewind = false);
 
         void SetVolume(const int id, const float volume);
+        void SetPan(const int id, const float pan);
         std::vector<ma_sound*> vecSounds;
 
     private:        
@@ -251,6 +252,12 @@ namespace olc
         
     }
 
+    void MiniAudio::SetPan(const int id, const float pan)
+    {
+        ma_sound_set_pan(vecSounds.at(id), pan);
+
+        
+    }
 } // olc
 
 #endif
