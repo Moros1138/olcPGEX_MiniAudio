@@ -74,7 +74,6 @@ namespace olc
         void Stop(const int id);
         void Pause(const int id);
         void Toggle(const int id, bool rewind = false);
-
         void SetVolume(const int id, const float volume);
         void SetPan(const int id, const float pan);
         void SetPitch(const int id, const float pitch);
