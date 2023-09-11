@@ -77,6 +77,8 @@ namespace olc
 
         void SetVolume(const int id, const float volume);
         void SetPan(const int id, const float pan);
+        void SetPitch(const int id, const float pitch);
+        
         std::vector<ma_sound*> vecSounds;
 
     private:        
@@ -258,6 +260,13 @@ namespace olc
 
         
     }
+    
+    void MiniAudio::SetPitch(const int id, const float pitch)
+    {
+        ma_sound_set_pitch(vecSounds.at(id), pitch);
+    }
+    
+
 } // olc
 
 #endif
