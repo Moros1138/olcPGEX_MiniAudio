@@ -3,8 +3,10 @@
 This extension abstracts the very robust and powerful miniaudio
 library. It provides simple loading and playback of WAV and MP3
 files. Because it's built on top of [miniaudio](https://miniaud.io), it requires next
-to no addictional build configurations in order to be built
+to no additional build configurations in order to be built
 for cross-platform.
+
+See the emscripten version [running on the web here](https://www.moros1138.com/demos/olcPGEX_MiniAudio/).
 
 # Features
 
