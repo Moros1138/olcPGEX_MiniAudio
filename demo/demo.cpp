@@ -92,6 +92,9 @@ public:
         // Draw Instructions and Indicators
         Clear(olc::BLACK);
 
+        if(ma.IsPlaying(song1))
+            Clear(olc::VERY_DARK_BLUE);
+
         DrawStringDecal({5, 5}, \
             "-------- INFO --- CONTROLS -\n"
             "\n"
