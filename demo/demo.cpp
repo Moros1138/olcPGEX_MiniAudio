@@ -102,7 +102,6 @@ public:
             "Volume <" + std::to_string(volume) + "> Up, Down\n", \
         olc::WHITE, {0.5f, 0.5f});
 
-        
         olc::vi2d center = (GetScreenSize() / 2);
         
         DrawStringDecal((center - olc::vi2d{0, 24}) - (olc::vf2d(GetTextSize("olcPGEX_MiniAudio Demo")) * 1.5f / 2.0f), "olcPGEX_MiniAudio Demo", olc::WHITE, {1.5f, 1.5f});
