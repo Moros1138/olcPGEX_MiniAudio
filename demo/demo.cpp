@@ -118,7 +118,11 @@ public:
         // Draw The Playback Cursor (aka the position in the sound file)
         FillRect({0, 175}, { (int)(ScreenWidth() * seek), 10 }, olc::YELLOW);
         
-        return !GetKey(olc::ESCAPE).bPressed;
+        #if defined(__EMSCRIPTEN__)
+            return true;
+        #else
+            return !GetKey(olc::ESCAPE).bPressed;
+        #endif
     }
 
     // The instance of the audio engine, no fancy config required.
