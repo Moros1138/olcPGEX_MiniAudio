@@ -4,7 +4,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                     MiniAudio v1.0                          |
+	|                     MiniAudio v1.1                          |
 	+-------------------------------------------------------------+
 
 	NOTE: UNDER ACTIVE DEVELOPMENT - THERE MAY BE BUGS/GLITCHES
@@ -104,7 +104,9 @@ namespace olc
         // set pitch of a sound, 1.0f is normal
         void SetPitch(const int id, float& pitch);
         
-    public: // MISC GETTERS
+    public: // MISC INFORMATION
+        // determine if a sound is playing
+        bool IsPlaying(const int id);
         // gets the current position in the sound, in milliseconds
         unsigned long long GetCursorMilliseconds(const int id);
         // gets the current position in the sound, as a float between 0.0f and 1.0f
@@ -365,6 +367,11 @@ namespace olc
         ma_sound_get_length_in_pcm_frames(vecSounds.at(id), &length);
 
         return (float)cursor / length;
+    }
+
+    bool MiniAudio::IsPlaying(const int id)
+    {
+        return ma_sound_is_playing(vecSounds.at(id));
     }
 
 } // olc
