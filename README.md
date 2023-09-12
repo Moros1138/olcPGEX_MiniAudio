@@ -8,6 +8,14 @@ for cross-platform.
 
 See the emscripten version [running on the web here](https://www.moros1138.com/demos/olcPGEX_MiniAudio/).
 
+# This is an olc::PixelGameEngine Extension
+
+This is an extension module for the awesome and wonderful [olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) by Javidx9.
+
+It relies on the equally amazing sound library [miniaudio](https://miniaud.io) by Mackron.
+
+Go show them lots of love, they work hard for it!
+
 # Features
 
 Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Emscripten projects.
