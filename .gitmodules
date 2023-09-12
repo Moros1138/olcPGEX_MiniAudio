@@ -1,0 +1,6 @@
+[submodule "miniaudio"]
+	path = third_party/miniaudio
+	url = https://github.com/mackron/miniaudio
+[submodule "olcPixelGameEngine"]
+	path = third_party/olcPixelGameEngine
+	url = https://github.com/OneLoneCoder/olcPixelGameEngine
