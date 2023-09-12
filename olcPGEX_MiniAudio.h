@@ -9,7 +9,7 @@
 
 	What is this?
 	~~~~~~~~~~~~~
-    TODO: write this
+    
 
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
@@ -59,7 +59,6 @@
 
 namespace olc
 {
-    
     class MiniAudio : public olc::PGEX
     {
     public:
@@ -74,10 +73,20 @@ namespace olc
         void Stop(const int id);
         void Pause(const int id);
         void Toggle(const int id, bool rewind = false);
-        void SetVolume(const int id, const float volume);
-        void SetPan(const int id, const float pan);
-        void SetPitch(const int id, const float pitch);
         
+        void SetVolume(const int id, float& volume);
+        void SetPan(const int id, float& pan);
+        void SetPitch(const int id, float& pitch);
+        
+        void Seek(const int id, const unsigned long long milliseconds);
+        void Seek(const int id, float& location);
+
+        void Forward(const int id, const unsigned long long milliseconds);
+        void Rewind(const int id, const unsigned long long milliseconds);
+        
+        unsigned long long GetCursorMilliseconds(const int id);
+        float GetCursorFloat(const int id);
+
         std::vector<ma_sound*> vecSounds;
 
     private:        
@@ -85,7 +94,7 @@ namespace olc
         ma_device device;
         ma_engine engine;
         ma_resource_manager resourceManager;
-
+        int sampleRate;
     };
 
     struct MiniAudioDeviceException : public std::exception
@@ -131,24 +140,22 @@ namespace olc
 
     MiniAudio::MiniAudio() : olc::PGEX(true)
     {
+        sampleRate = 48000;
+        
         ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
         deviceConfig.playback.format = ma_format_f32;
         deviceConfig.playback.channels = 2;
-        deviceConfig.sampleRate = 48000;
+        deviceConfig.sampleRate = sampleRate;
         deviceConfig.dataCallback = MiniAudio::data_callback;
         deviceConfig.pUserData = &engine;
 
         if(ma_device_init(NULL, &deviceConfig, &device) != MA_SUCCESS)
             throw MiniAudioDeviceException();
 
-        /*
-        We are going to be initializing multiple engines. In order to save on memory usage we can use a self managed
-        resource manager so we can share a single resource manager across multiple engines.
-        */
         ma_resource_manager_config resourceManagerConfig = ma_resource_manager_config_init();
-        resourceManagerConfig.decodedFormat     = ma_format_f32;    /* ma_format_f32 should almost always be used as that's what the engine (and most everything else) uses for mixing. */
-        resourceManagerConfig.decodedChannels   = 0;                /* Setting the channel count to 0 will cause sounds to use their native channel count. */
-        resourceManagerConfig.decodedSampleRate = 48000;            /* Using a consistent sample rate is useful for avoiding expensive resampling in the audio thread. This will result in resampling being performed by the loading thread(s). */
+        resourceManagerConfig.decodedFormat     = ma_format_f32;
+        resourceManagerConfig.decodedChannels   = 0;
+        resourceManagerConfig.decodedSampleRate = sampleRate;
         
         #ifdef __EMSCRIPTEN__
             resourceManagerConfig.jobThreadCount = 0;                           
@@ -203,7 +210,6 @@ namespace olc
         if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, vecSounds.at(id)) != MA_SUCCESS)
             throw MiniAudioSoundException();
         
-        std::cout << "Loaded <" << path << "> with id <" << id << ">\n";
         return id;
     }
     
@@ -246,25 +252,78 @@ namespace olc
         ma_sound_start(vecSounds.at(id));
     }
     
-    void MiniAudio::SetVolume(const int id, const float volume)
+    void MiniAudio::SetVolume(const int id, float& volume)
     {
         ma_sound_set_volume(vecSounds.at(id), volume);
-        
-        
     }
 
-    void MiniAudio::SetPan(const int id, const float pan)
+    void MiniAudio::SetPan(const int id, float& pan)
     {
         ma_sound_set_pan(vecSounds.at(id), pan);
-
-        
     }
     
-    void MiniAudio::SetPitch(const int id, const float pitch)
+    void MiniAudio::SetPitch(const int id, float& pitch)
     {
         ma_sound_set_pitch(vecSounds.at(id), pitch);
     }
     
+    void MiniAudio::Seek(const int id, const unsigned long long milliseconds)
+    {
+        unsigned long long frame = (milliseconds * engine.sampleRate) / 1000;
+        
+        ma_sound_seek_to_pcm_frame(vecSounds.at(id), frame);
+    }
+
+    void MiniAudio::Seek(const int id, float& location)
+    {
+        unsigned long long length;
+        ma_sound_get_length_in_pcm_frames(vecSounds.at(id), &length);
+
+        unsigned long long frame = length * location;
+        
+        ma_sound_seek_to_pcm_frame(vecSounds.at(id), frame);
+    }
+
+
+    void MiniAudio::Forward(const int id, const unsigned long long milliseconds)
+    {
+        unsigned long long cursor;
+        ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
+
+        unsigned long long frame = (milliseconds * engine.sampleRate) / 1000;
+        ma_sound_seek_to_pcm_frame(vecSounds.at(id), cursor + frame);
+    }
+
+    void MiniAudio::Rewind(const int id, const unsigned long long milliseconds)
+    {
+        unsigned long long cursor;
+        ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
+
+        unsigned long long frame = (milliseconds * engine.sampleRate) / 1000;
+        ma_sound_seek_to_pcm_frame(vecSounds.at(id), cursor - frame);
+    }
+
+    unsigned long long MiniAudio::GetCursorMilliseconds(const int id)
+    {
+        unsigned long long cursor;
+        ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
+
+        cursor /= sampleRate;
+        cursor /= 1000;
+        
+        return cursor;
+    }
+
+    float MiniAudio::GetCursorFloat(const int id)
+    {
+        unsigned long long cursor;
+        ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
+
+        unsigned long long length;
+        ma_sound_get_length_in_pcm_frames(vecSounds.at(id), &length);
+
+        return (float)cursor / length;
+    }
 
 } // olc
 
