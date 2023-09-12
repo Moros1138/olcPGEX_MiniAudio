@@ -3,13 +3,19 @@
 	olcPGEX_MiniAudio.h
 
 	+-------------------------------------------------------------+
-	|           MiniAudio PGE eXtension v0.01                     |
-	| "What do you need? Samples.. Lots of Samples.." - moros1138 |
+	|         OneLoneCoder Pixel Game Engine Extension            |
+	|                     MiniAudio v1.0                          |
 	+-------------------------------------------------------------+
 
-	What is this?
-	~~~~~~~~~~~~~
+	NOTE: UNDER ACTIVE DEVELOPMENT - THERE MAY BE BUGS/GLITCHES
     
+    What is this?
+	~~~~~~~~~~~~~
+    This extension abstracts the very robust and powerful miniaudio
+    library. It provides simple loading and playback of WAV and MP3
+    files. Because it's built on top of miniaudio, it requires next
+    to no addictional build configurations in order to be built
+    for cross-platform.
 
 	License (OLC-3)
 	~~~~~~~~~~~~~~~
@@ -66,37 +72,73 @@ namespace olc
         ~MiniAudio();
         virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
         static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-        
+    
+    public: // LOADING ROUTINES       
         const int LoadSound(const std::string& path);
-        
+    
+    public: // PLAYBACK CONTROLS
+        // plays a sample, can be set to loop
         void Play(const int id, const bool loop = false);
+        // stops a sample, rewinds to beginning
         void Stop(const int id);
+        // pauses a sample, does not change position
         void Pause(const int id);
+        //  toggle between play and pause
         void Toggle(const int id, bool rewind = false);
-        
+    
+    public: // SEEKING CONTROLS
+        // seek to the provided position in the sound, by milliseconds
+        void Seek(const int id, const unsigned long long milliseconds);
+        // seek to the provided position in the sound, by float 0.f is beginning, 1.0f is end
+        void Seek(const int id, float& location);
+        // seek forward from current position by the provided time
+        void Forward(const int id, const unsigned long long milliseconds);
+        // seek forward from current position by the provided time
+        void Rewind(const int id, const unsigned long long milliseconds);
+
+    public: // MISC CONTROLS
+        // set volume of a sound, 0.0f is mute, 1.0f is full
         void SetVolume(const int id, float& volume);
+        // set pan of a sound, -1.0f is left, 1.0f is right, 0.0f is center
         void SetPan(const int id, float& pan);
+        // set pitch of a sound, 1.0f is normal
         void SetPitch(const int id, float& pitch);
         
-        void Seek(const int id, const unsigned long long milliseconds);
-        void Seek(const int id, float& location);
-
-        void Forward(const int id, const unsigned long long milliseconds);
-        void Rewind(const int id, const unsigned long long milliseconds);
-        
+    public: // MISC GETTERS
+        // gets the current position in the sound, in milliseconds
         unsigned long long GetCursorMilliseconds(const int id);
+        // gets the current position in the sound, as a float between 0.0f and 1.0f
         float GetCursorFloat(const int id);
 
-        std::vector<ma_sound*> vecSounds;
-
     private:        
-        ma_context context;
+        
+        /*
+            Soooo, i'm not going to spend a whole lot of time
+            documenting miniaudio features, if you want to
+            know more I invite you to visit their very very
+            nicely documented webiste at:
+
+            https://miniaud.io/docs/manual/index.html
+        */
+        
         ma_device device;
         ma_engine engine;
         ma_resource_manager resourceManager;
+        
+        // sample rate for the device and engine
         int sampleRate;
+        // this is where the sounds are kept
+        std::vector<ma_sound*> vecSounds;
+
     };
 
+    /**
+     * EXCEPTIONS, long story short. I needed to be able
+     * to construct the PGEX in a state where it could
+     * fail at runtime. If you have a better way of
+     * accomplishing the PGEX pattern without using
+     * exceptions, I'm open to suggestions!
+    */
     struct MiniAudioDeviceException : public std::exception
     {
         const char* what() const throw()
