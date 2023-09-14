@@ -13,6 +13,7 @@ public:
     }
     
 public:
+
     bool OnUserCreate() override
     {
         // Load a sample from a file, currently decodes WAV and MP3
@@ -25,7 +26,13 @@ public:
 
     bool OnUserUpdate(float fElapsedTime) override
     {
-        
+
+        if(GetKey(olc::S).bPressed)
+        {
+            ma.Play("assets/sounds/SampleA.wav");
+        }
+
+
         if(GetKey(olc::SPACE).bPressed)
         {
             // Toggle takes a sample ID (int) and either starts playback or pauses playback
@@ -63,7 +70,6 @@ public:
             volume += 1.0f * fElapsedTime;
             if(volume > 1.0f) volume = 1.0f;
         }
-            
         
         // Reset pan, pitch, and volume
         if(GetKey(olc::R).bPressed)
@@ -94,6 +100,8 @@ public:
 
         if(ma.IsPlaying(song1))
             Clear(olc::VERY_DARK_BLUE);
+
+        DrawStringDecal({ 280, 5}, "Sounds: " + std::to_string(ma.GetOneOffSounds().size()), olc::WHITE, { 0.5f, 0.5f });
 
         DrawStringDecal({5, 5}, \
             "-------- INFO --- CONTROLS -\n"
