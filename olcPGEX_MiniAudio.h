@@ -361,21 +361,6 @@ namespace olc
         ma_sound_start(vecSounds.at(id));
     }
     
-    void MiniAudio::SetVolume(const int id, float& volume)
-    {
-        ma_sound_set_volume(vecSounds.at(id), volume);
-    }
-
-    void MiniAudio::SetPan(const int id, float& pan)
-    {
-        ma_sound_set_pan(vecSounds.at(id), pan);
-    }
-    
-    void MiniAudio::SetPitch(const int id, float& pitch)
-    {
-        ma_sound_set_pitch(vecSounds.at(id), pitch);
-    }
-    
     void MiniAudio::Seek(const int id, const unsigned long long milliseconds)
     {
         unsigned long long frame = (milliseconds * engine.sampleRate) / 1000;
@@ -392,7 +377,6 @@ namespace olc
         
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), frame);
     }
-
 
     void MiniAudio::Forward(const int id, const unsigned long long milliseconds)
     {
@@ -412,6 +396,21 @@ namespace olc
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), cursor - frame);
     }
 
+    void MiniAudio::SetVolume(const int id, float& volume)
+    {
+        ma_sound_set_volume(vecSounds.at(id), volume);
+    }
+
+    void MiniAudio::SetPan(const int id, float& pan)
+    {
+        ma_sound_set_pan(vecSounds.at(id), pan);
+    }
+    
+    void MiniAudio::SetPitch(const int id, float& pitch)
+    {
+        ma_sound_set_pitch(vecSounds.at(id), pitch);
+    }
+
     unsigned long long MiniAudio::GetCursorMilliseconds(const int id)
     {
         unsigned long long cursor;
@@ -423,6 +422,11 @@ namespace olc
         return cursor;
     }
 
+    bool MiniAudio::IsPlaying(const int id)
+    {
+        return ma_sound_is_playing(vecSounds.at(id));
+    }
+
     float MiniAudio::GetCursorFloat(const int id)
     {
         unsigned long long cursor;
@@ -432,11 +436,6 @@ namespace olc
         ma_sound_get_length_in_pcm_frames(vecSounds.at(id), &length);
 
         return (float)cursor / length;
-    }
-
-    bool MiniAudio::IsPlaying(const int id)
-    {
-        return ma_sound_is_playing(vecSounds.at(id));
     }
 
     const std::vector<ma_sound*>& MiniAudio::GetSounds() const
