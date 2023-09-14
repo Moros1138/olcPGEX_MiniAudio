@@ -4,7 +4,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                     MiniAudio v1.2                          |
+	|                     MiniAudio v1.3                          |
 	+-------------------------------------------------------------+
 
 	NOTE: UNDER ACTIVE DEVELOPMENT - THERE MAY BE BUGS/GLITCHES
@@ -68,7 +68,7 @@ namespace olc
     class MiniAudio : public olc::PGEX
     {
     public:
-        std::string name = "olcPGEX_MiniAudio v1.2";
+        std::string name = "olcPGEX_MiniAudio v1.3";
     
     public:
         MiniAudio();
@@ -117,8 +117,16 @@ namespace olc
         unsigned long long GetCursorMilliseconds(const int id);
         // gets the current position in the sound, as a float between 0.0f and 1.0f
         float GetCursorFloat(const int id);
+        
+    public: // ADVANCED FEATURES for those who want to use more of miniaudio
+        // gets the currently loaded persistent sounds
         const std::vector<ma_sound*>& GetSounds() const;
+        // gets the currently loaded one-off sounds
         const std::vector<ma_sound*>& GetOneOffSounds() const;
+        // gets a pointer to the ma_device
+        const ma_device* GetDevice() const;
+        // gets a pointer to the ma_engine
+        const ma_engine* GetEngine() const;
 
     private:        
         
@@ -353,21 +361,6 @@ namespace olc
         ma_sound_start(vecSounds.at(id));
     }
     
-    void MiniAudio::SetVolume(const int id, float& volume)
-    {
-        ma_sound_set_volume(vecSounds.at(id), volume);
-    }
-
-    void MiniAudio::SetPan(const int id, float& pan)
-    {
-        ma_sound_set_pan(vecSounds.at(id), pan);
-    }
-    
-    void MiniAudio::SetPitch(const int id, float& pitch)
-    {
-        ma_sound_set_pitch(vecSounds.at(id), pitch);
-    }
-    
     void MiniAudio::Seek(const int id, const unsigned long long milliseconds)
     {
         unsigned long long frame = (milliseconds * engine.sampleRate) / 1000;
@@ -384,7 +377,6 @@ namespace olc
         
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), frame);
     }
-
 
     void MiniAudio::Forward(const int id, const unsigned long long milliseconds)
     {
@@ -404,6 +396,21 @@ namespace olc
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), cursor - frame);
     }
 
+    void MiniAudio::SetVolume(const int id, float& volume)
+    {
+        ma_sound_set_volume(vecSounds.at(id), volume);
+    }
+
+    void MiniAudio::SetPan(const int id, float& pan)
+    {
+        ma_sound_set_pan(vecSounds.at(id), pan);
+    }
+    
+    void MiniAudio::SetPitch(const int id, float& pitch)
+    {
+        ma_sound_set_pitch(vecSounds.at(id), pitch);
+    }
+
     unsigned long long MiniAudio::GetCursorMilliseconds(const int id)
     {
         unsigned long long cursor;
@@ -413,6 +420,11 @@ namespace olc
         cursor /= 1000;
         
         return cursor;
+    }
+
+    bool MiniAudio::IsPlaying(const int id)
+    {
+        return ma_sound_is_playing(vecSounds.at(id));
     }
 
     float MiniAudio::GetCursorFloat(const int id)
@@ -426,11 +438,6 @@ namespace olc
         return (float)cursor / length;
     }
 
-    bool MiniAudio::IsPlaying(const int id)
-    {
-        return ma_sound_is_playing(vecSounds.at(id));
-    }
-
     const std::vector<ma_sound*>& MiniAudio::GetSounds() const
     {
         return vecSounds;
@@ -441,6 +448,15 @@ namespace olc
         return vecOneOffSounds;
     }
 
+    const ma_device* MiniAudio::GetDevice() const
+    {
+        return &device;
+    }
+
+    const ma_engine* MiniAudio::GetEngine() const
+    {
+        return &engine;
+    }
 
 } // olc
 

@@ -44,6 +44,10 @@ Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Em
 * Get the current position in the sample, in milliseconds.
 * Get the current position in the sample, as float 0.0f is start, 1.0f is end.
 
+*** Advanced Features, for those who want to use more of miniaudio
+* Get a pointer to the ma_device
+* Get a poitner to the ma_engine
+
 # Usage
 
 Add miniaudio.h and olcPGEX_MiniAudio.h to your project. (THE PGEX EXPECTS miniaudio.h to be either in the same directory, or in the include path of your toolchain)
