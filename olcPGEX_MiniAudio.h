@@ -80,6 +80,8 @@ namespace olc
     public: // PLAYBACK CONTROLS
         // plays a sample, can be set to loop
         void Play(const int id, const bool loop = false);
+        // plays a sound file, as a one off, and automatically unloads it
+        void Play(const std::string& path);
         // stops a sample, rewinds to beginning
         void Stop(const int id);
         // pauses a sample, does not change position
@@ -132,6 +134,7 @@ namespace olc
         int sampleRate;
         // this is where the sounds are kept
         std::vector<ma_sound*> vecSounds;
+        std::vector<ma_sound*> vecOneOffSounds;
 
     };
 
@@ -242,6 +245,16 @@ namespace olc
         ma_resource_manager_process_next_job(&resourceManager);
         #endif
 
+        for(int i = 0; i < vecOneOffSounds.size(); i++)
+        {
+            if(!ma_sound_is_playing(vecOneOffSounds.at(i)))
+            {
+                ma_sound_uninit(vecOneOffSounds.at(i));
+                vecOneOffSounds.erase(vecOneOffSounds.begin() + i);
+                break;
+            }
+        }
+
         return false;
     }
 
@@ -293,6 +306,19 @@ namespace olc
         
         ma_sound_set_looping(vecSounds.at(id), loop);
         ma_sound_start(vecSounds.at(id));
+    }
+
+    void MiniAudio::Play(const std::string& path)
+    {
+        // create the sound
+        ma_sound* sound = new ma_sound();
+
+        // load it from the file and decode it
+        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound) != MA_SUCCESS)
+            throw MiniAudioSoundException();
+        
+        ma_sound_start(sound);
+        vecOneOffSounds.push_back(sound);
     }
 
     void MiniAudio::Stop(const int id)
