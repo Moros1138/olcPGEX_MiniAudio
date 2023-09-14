@@ -75,6 +75,7 @@ namespace olc
     
     public: // LOADING ROUTINES       
         const int LoadSound(const std::string& path);
+        void UnloadSound(const int id);
     
     public: // PLAYBACK CONTROLS
         // plays a sample, can be set to loop
@@ -223,8 +224,11 @@ namespace olc
     {
         for(auto sound : vecSounds)
         {
-            ma_sound_uninit(sound);
-            delete sound;
+            if(sound != nullptr)
+            {
+                ma_sound_uninit(sound);
+                delete sound;
+            }
         }
             
         ma_resource_manager_uninit(&resourceManager);
@@ -248,15 +252,37 @@ namespace olc
 
     const int MiniAudio::LoadSound(const std::string& path)
     {
-        const int id = vecSounds.size();
-        vecSounds.push_back(new ma_sound());
-        
-        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, vecSounds.at(id)) != MA_SUCCESS)
+        // create the sound
+        ma_sound* sound = new ma_sound();
+
+        // load it from the file and decode it
+        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound) != MA_SUCCESS)
             throw MiniAudioSoundException();
+        
+        // attempt to re-use an empty slot
+        for(int i = 0; i < vecSounds.size(); i++)
+        {
+            if(vecSounds.at(i) == nullptr)
+            {
+                vecSounds.at(i) = sound;
+                return i;
+            }
+        }
+        
+        // no empty slots, make more room!
+        const int id = vecSounds.size();
+        vecSounds.push_back(sound);
         
         return id;
     }
     
+    void MiniAudio::UnloadSound(const int id)
+    {
+        ma_sound_uninit(vecSounds.at(id));
+        delete vecSounds.at(id);
+        vecSounds.at(id) = nullptr;
+    }
+
     void MiniAudio::Play(const int id, const bool loop)
     {
         if(ma_sound_is_playing(vecSounds.at(id)))
