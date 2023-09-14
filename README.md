@@ -25,7 +25,7 @@ Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Em
 * Loads MP3 files
 
 ### Playback Features
-* Play a sample in one off, or looping mode.
+* Play a sample, normal, looping, one-off and unload modes.
 * Stop a sample and reset it for future playback.
 * Pause a sample.
 * Toggle (Play/Pause), convenience function.
