@@ -117,8 +117,16 @@ namespace olc
         unsigned long long GetCursorMilliseconds(const int id);
         // gets the current position in the sound, as a float between 0.0f and 1.0f
         float GetCursorFloat(const int id);
+        
+    public: // ADVANCED FEATURES for those who want to use more of miniaudio
+        // gets the currently loaded persistent sounds
         const std::vector<ma_sound*>& GetSounds() const;
+        // gets the currently loaded one-off sounds
         const std::vector<ma_sound*>& GetOneOffSounds() const;
+        // gets a pointer to the ma_device
+        const ma_device* GetDevice() const;
+        // gets a pointer to the ma_engine
+        const ma_engine* GetEngine() const;
 
     private:        
         
@@ -441,6 +449,15 @@ namespace olc
         return vecOneOffSounds;
     }
 
+    const ma_device* MiniAudio::GetDevice() const
+    {
+        return &device;
+    }
+
+    const ma_engine* MiniAudio::GetEngine() const
+    {
+        return &engine;
+    }
 
 } // olc
 
