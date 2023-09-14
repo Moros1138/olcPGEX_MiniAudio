@@ -68,6 +68,9 @@ namespace olc
     class MiniAudio : public olc::PGEX
     {
     public:
+        std::string name = "olcPGEX_MiniAudio v1.2";
+    
+    public:
         MiniAudio();
         ~MiniAudio();
         virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
