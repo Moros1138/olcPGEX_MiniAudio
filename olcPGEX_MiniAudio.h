@@ -4,7 +4,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                     MiniAudio v1.1                          |
+	|                     MiniAudio v1.2                          |
 	+-------------------------------------------------------------+
 
 	NOTE: UNDER ACTIVE DEVELOPMENT - THERE MAY BE BUGS/GLITCHES
@@ -68,6 +68,9 @@ namespace olc
     class MiniAudio : public olc::PGEX
     {
     public:
+        std::string name = "olcPGEX_MiniAudio v1.2";
+    
+    public:
         MiniAudio();
         ~MiniAudio();
         virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
@@ -75,10 +78,13 @@ namespace olc
     
     public: // LOADING ROUTINES       
         const int LoadSound(const std::string& path);
+        void UnloadSound(const int id);
     
     public: // PLAYBACK CONTROLS
         // plays a sample, can be set to loop
         void Play(const int id, const bool loop = false);
+        // plays a sound file, as a one off, and automatically unloads it
+        void Play(const std::string& path);
         // stops a sample, rewinds to beginning
         void Stop(const int id);
         // pauses a sample, does not change position
@@ -111,6 +117,8 @@ namespace olc
         unsigned long long GetCursorMilliseconds(const int id);
         // gets the current position in the sound, as a float between 0.0f and 1.0f
         float GetCursorFloat(const int id);
+        const std::vector<ma_sound*>& GetSounds() const;
+        const std::vector<ma_sound*>& GetOneOffSounds() const;
 
     private:        
         
@@ -131,6 +139,7 @@ namespace olc
         int sampleRate;
         // this is where the sounds are kept
         std::vector<ma_sound*> vecSounds;
+        std::vector<ma_sound*> vecOneOffSounds;
 
     };
 
@@ -223,8 +232,11 @@ namespace olc
     {
         for(auto sound : vecSounds)
         {
-            ma_sound_uninit(sound);
-            delete sound;
+            if(sound != nullptr)
+            {
+                ma_sound_uninit(sound);
+                delete sound;
+            }
         }
             
         ma_resource_manager_uninit(&resourceManager);
@@ -238,6 +250,16 @@ namespace olc
         ma_resource_manager_process_next_job(&resourceManager);
         #endif
 
+        for(int i = 0; i < vecOneOffSounds.size(); i++)
+        {
+            if(!ma_sound_is_playing(vecOneOffSounds.at(i)))
+            {
+                ma_sound_uninit(vecOneOffSounds.at(i));
+                vecOneOffSounds.erase(vecOneOffSounds.begin() + i);
+                break;
+            }
+        }
+
         return false;
     }
 
@@ -248,15 +270,37 @@ namespace olc
 
     const int MiniAudio::LoadSound(const std::string& path)
     {
-        const int id = vecSounds.size();
-        vecSounds.push_back(new ma_sound());
-        
-        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, vecSounds.at(id)) != MA_SUCCESS)
+        // create the sound
+        ma_sound* sound = new ma_sound();
+
+        // load it from the file and decode it
+        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound) != MA_SUCCESS)
             throw MiniAudioSoundException();
+        
+        // attempt to re-use an empty slot
+        for(int i = 0; i < vecSounds.size(); i++)
+        {
+            if(vecSounds.at(i) == nullptr)
+            {
+                vecSounds.at(i) = sound;
+                return i;
+            }
+        }
+        
+        // no empty slots, make more room!
+        const int id = vecSounds.size();
+        vecSounds.push_back(sound);
         
         return id;
     }
     
+    void MiniAudio::UnloadSound(const int id)
+    {
+        ma_sound_uninit(vecSounds.at(id));
+        delete vecSounds.at(id);
+        vecSounds.at(id) = nullptr;
+    }
+
     void MiniAudio::Play(const int id, const bool loop)
     {
         if(ma_sound_is_playing(vecSounds.at(id)))
@@ -267,6 +311,19 @@ namespace olc
         
         ma_sound_set_looping(vecSounds.at(id), loop);
         ma_sound_start(vecSounds.at(id));
+    }
+
+    void MiniAudio::Play(const std::string& path)
+    {
+        // create the sound
+        ma_sound* sound = new ma_sound();
+
+        // load it from the file and decode it
+        if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound) != MA_SUCCESS)
+            throw MiniAudioSoundException();
+        
+        ma_sound_start(sound);
+        vecOneOffSounds.push_back(sound);
     }
 
     void MiniAudio::Stop(const int id)
@@ -373,6 +430,17 @@ namespace olc
     {
         return ma_sound_is_playing(vecSounds.at(id));
     }
+
+    const std::vector<ma_sound*>& MiniAudio::GetSounds() const
+    {
+        return vecSounds;
+    }
+
+    const std::vector<ma_sound*>& MiniAudio::GetOneOffSounds() const
+    {
+        return vecOneOffSounds;
+    }
+
 
 } // olc
 

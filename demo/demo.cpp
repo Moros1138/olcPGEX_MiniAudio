@@ -13,6 +13,7 @@ public:
     }
     
 public:
+
     bool OnUserCreate() override
     {
         // Load a sample from a file, currently decodes WAV and MP3
@@ -25,7 +26,13 @@ public:
 
     bool OnUserUpdate(float fElapsedTime) override
     {
-        
+
+        if(GetKey(olc::S).bPressed)
+        {
+            ma.Play("assets/sounds/SampleA.wav");
+        }
+
+
         if(GetKey(olc::SPACE).bPressed)
         {
             // Toggle takes a sample ID (int) and either starts playback or pauses playback
@@ -63,7 +70,6 @@ public:
             volume += 1.0f * fElapsedTime;
             if(volume > 1.0f) volume = 1.0f;
         }
-            
         
         // Reset pan, pitch, and volume
         if(GetKey(olc::R).bPressed)
@@ -102,12 +108,14 @@ public:
             "\n"
             "Pitch  <" + std::to_string(pitch)  + ">   [, ]\n"
             "\n"
-            "Volume <" + std::to_string(volume) + "> Up, Down\n", \
+            "Volume <" + std::to_string(volume) + "> Up, Down\n"
+            "\n"
+            "One-Off Sounds <" + std::to_string(ma.GetOneOffSounds().size()) + ">   S", \
         olc::WHITE, {0.5f, 0.5f});
 
         olc::vi2d center = (GetScreenSize() / 2);
-        
-        DrawStringDecal((center - olc::vi2d{0, 24}) - (olc::vf2d(GetTextSize("olcPGEX_MiniAudio Demo")) * 1.5f / 2.0f), "olcPGEX_MiniAudio Demo", olc::WHITE, {1.5f, 1.5f});
+        constexpr float scale = 1.2f;
+        DrawStringDecal((center - olc::vi2d{0, 24}) - (olc::vf2d(GetTextSize(ma.name + " Demo")) * scale / 2.0f), ma.name + " Demo", olc::WHITE, {scale, scale});
         DrawStringDecal(center - (GetTextSize("Hit <SPACE> To Toggle Playback") / 2), "Hit <SPACE> To Toggle Playback", olc::WHITE);
         DrawStringDecal((center + olc::vi2d{0, 16}) - (GetTextSize("Hit <R> TO Reset Pan/Pitch/Volume") / 2), "Hit <R> TO Reset Pan/Pitch/Volume", olc::WHITE);
 
