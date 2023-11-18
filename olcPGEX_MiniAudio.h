@@ -75,7 +75,12 @@ namespace olc
         ~MiniAudio();
         virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
         static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-    
+        static bool backgroundPlay;
+
+    public: // CONFIGURATION
+        // set whether audio will continue playing when the app has lost focus
+        void SetBackgroundPlay(bool state);
+
     public: // LOADING ROUTINES       
         const int LoadSound(const std::string& path);
         void UnloadSound(const int id);
@@ -148,7 +153,6 @@ namespace olc
         // this is where the sounds are kept
         std::vector<ma_sound*> vecSounds;
         std::vector<ma_sound*> vecOneOffSounds;
-
     };
 
     /**
@@ -198,7 +202,8 @@ namespace olc
 
 namespace olc
 {
-
+    bool MiniAudio::backgroundPlay = false;
+    
     MiniAudio::MiniAudio() : olc::PGEX(true)
     {
         sampleRate = 48000;
@@ -234,6 +239,7 @@ namespace olc
         if(ma_engine_init(&engineConfig, &engine) != MA_SUCCESS)
             throw MiniAudioEngineException();
         
+        MiniAudio::backgroundPlay = false; 
     }
 
     MiniAudio::~MiniAudio()
@@ -273,7 +279,15 @@ namespace olc
 
     void MiniAudio::data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
     {
+        if(!MiniAudio::backgroundPlay && !pge->IsFocused())
+            return;
+
         ma_engine_read_pcm_frames((ma_engine*)(pDevice->pUserData), pOutput, frameCount, NULL);
+    }
+    
+    void MiniAudio::SetBackgroundPlay(bool state)
+    {
+        MiniAudio::backgroundPlay = state;
     }
 
     const int MiniAudio::LoadSound(const std::string& path)
