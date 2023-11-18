@@ -24,6 +24,9 @@ Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Em
 * Loads WAV files
 * Loads MP3 files
 
+### Configuration Features
+* Background Playback
+
 ### Playback Features
 * Play a sample, normal, looping, one-off and unload modes.
 * Stop a sample and reset it for future playback.
