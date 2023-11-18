@@ -4,6 +4,8 @@
 #define OLC_PGEX_MINIAUDIO
 #include "olcPGEX_MiniAudio.h"
 
+constexpr float thirtyFramesPerSecond = 1.0f / 30.f;
+
 class Demo : public olc::PixelGameEngine
 {
 public:
@@ -23,15 +25,21 @@ public:
 
         return true;
     }
-
+    
     bool OnUserUpdate(float fElapsedTime) override
     {
+        fElapsedTime = (fElapsedTime > thirtyFramesPerSecond) ? thirtyFramesPerSecond : fElapsedTime;
+
+        if(GetKey(olc::K1).bPressed)
+        {
+            backgroundPlay = !backgroundPlay;
+            ma.SetBackgroundPlay(backgroundPlay);
+        }
 
         if(GetKey(olc::S).bPressed)
         {
             ma.Play("assets/sounds/SampleA.wav");
         }
-
 
         if(GetKey(olc::SPACE).bPressed)
         {
@@ -40,7 +48,6 @@ public:
             ma.Toggle(song1);
         }
             
-        
         if(GetKey(olc::MINUS).bHeld)
         {
             pan -= 1.0f * fElapsedTime;
@@ -110,7 +117,9 @@ public:
             "\n"
             "Volume <" + std::to_string(volume) + "> Up, Down\n"
             "\n"
-            "One-Off Sounds <" + std::to_string(ma.GetOneOffSounds().size()) + ">   S", \
+            "One-Off Sounds <" + std::to_string(ma.GetOneOffSounds().size()) + ">   S\n" \
+            "\n" \
+            "BackgroundPlay <" + ((backgroundPlay) ? "On": "Off") + "> K1\n",
         olc::WHITE, {0.5f, 0.5f});
 
         olc::vi2d center = (GetScreenSize() / 2);
@@ -146,6 +155,7 @@ public:
     float pitch  = 1.0f;
     float seek   = 0.0f;
     float volume = 1.0f;
+    bool backgroundPlay = false;
 
 };
 
