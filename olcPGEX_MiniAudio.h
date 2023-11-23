@@ -101,7 +101,7 @@ namespace olc
         // seek to the provided position in the sound, by milliseconds
         void Seek(const int id, const unsigned long long milliseconds);
         // seek to the provided position in the sound, by float 0.f is beginning, 1.0f is end
-        void Seek(const int id, float& location);
+        void Seek(const int id, const float& location);
         // seek forward from current position by the provided time
         void Forward(const int id, const unsigned long long milliseconds);
         // seek forward from current position by the provided time
@@ -109,11 +109,11 @@ namespace olc
 
     public: // MISC CONTROLS
         // set volume of a sound, 0.0f is mute, 1.0f is full
-        void SetVolume(const int id, float& volume);
+        void SetVolume(const int id, const float& volume);
         // set pan of a sound, -1.0f is left, 1.0f is right, 0.0f is center
-        void SetPan(const int id, float& pan);
+        void SetPan(const int id, const float& pan);
         // set pitch of a sound, 1.0f is normal
-        void SetPitch(const int id, float& pitch);
+        void SetPitch(const int id, const float& pitch);
         
     public: // MISC INFORMATION
         // determine if a sound is playing
@@ -382,7 +382,7 @@ namespace olc
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), frame);
     }
 
-    void MiniAudio::Seek(const int id, float& location)
+    void MiniAudio::Seek(const int id, const float& location)
     {
         unsigned long long length;
         ma_sound_get_length_in_pcm_frames(vecSounds.at(id), &length);
@@ -410,17 +410,17 @@ namespace olc
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), cursor - frame);
     }
 
-    void MiniAudio::SetVolume(const int id, float& volume)
+    void MiniAudio::SetVolume(const int id, const float& volume)
     {
         ma_sound_set_volume(vecSounds.at(id), volume);
     }
 
-    void MiniAudio::SetPan(const int id, float& pan)
+    void MiniAudio::SetPan(const int id, const float& pan)
     {
         ma_sound_set_pan(vecSounds.at(id), pan);
     }
     
-    void MiniAudio::SetPitch(const int id, float& pitch)
+    void MiniAudio::SetPitch(const int id, const float& pitch)
     {
         ma_sound_set_pitch(vecSounds.at(id), pitch);
     }
