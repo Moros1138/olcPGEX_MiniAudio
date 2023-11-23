@@ -129,9 +129,9 @@ namespace olc
         // gets the currently loaded one-off sounds
         const std::vector<ma_sound*>& GetOneOffSounds() const;
         // gets a pointer to the ma_device
-        const ma_device* GetDevice() const;
+        ma_device* GetDevice();
         // gets a pointer to the ma_engine
-        const ma_engine* GetEngine() const;
+        ma_engine* GetEngine();
 
     private:        
         
@@ -462,12 +462,12 @@ namespace olc
         return vecOneOffSounds;
     }
 
-    const ma_device* MiniAudio::GetDevice() const
+    ma_device* MiniAudio::GetDevice()
     {
         return &device;
     }
 
-    const ma_engine* MiniAudio::GetEngine() const
+    ma_engine* MiniAudio::GetEngine()
     {
         return &engine;
     }
