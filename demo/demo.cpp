@@ -23,6 +23,11 @@ public:
         // returns a sample ID (int), for future control calls.
         song1 = ma.LoadSound("assets/sounds/song1.mp3");
 
+        // This is here to demonstrate how the adventurous can exploit other features of miniaudio
+        // that hasn't been abstracted by the PGEX.
+        // 
+        // see how we get a pointer of the song1 sound?
+        ma_sound_set_position(ma.GetSounds()[song1], 0.0f, 0.0f, 0.0f);
         return true;
     }
     
@@ -66,14 +71,26 @@ public:
         if(GetKey(olc::UP).bHeld)
             volume += 1.0f * fElapsedTime;
         
+        if(GetKey(olc::LEFT).bHeld)
+            distance -= 10.0f * fElapsedTime;
+            
+        if(GetKey(olc::RIGHT).bHeld)
+            distance += 10.0f * fElapsedTime;
+
         // Reset pan, pitch, and volume
         if(GetKey(olc::R).bPressed)
         {
             pan = 0.0f;
             pitch = 1.0f;
             volume = 1.0f;
+            distance = 0.0f;
         }
         
+        // This is here to demonstrate how the adventurous can exploit other features of miniaudio
+        // that hasn't been abstracted by the PGEX.
+        distance = std::clamp(distance, 0.0f, 100.0f);
+        ma_engine_listener_set_position(ma.GetEngine(), 0, 0.0f, distance, 0.0f);
+
         // Set pan, takes a sample ID (int), and a float
         // -1.0 to 1.0 where 0 is center
         pan    = std::clamp(pan,   -1.0f, 1.0f);
@@ -107,6 +124,8 @@ public:
             "Pitch  <" + std::to_string(pitch)  + ">   [, ]\n"
             "\n"
             "Volume <" + std::to_string(volume) + "> Up, Down\n"
+            "\n"
+            "Distance <" + std::to_string(distance) + "> Left, Right\n"
             "\n"
             "One-Off Sounds <" + std::to_string(ma.GetOneOffSounds().size()) + ">   S\n" \
             "\n" \
@@ -146,6 +165,7 @@ public:
     float pitch  = 1.0f;
     float seek   = 0.0f;
     float volume = 1.0f;
+    float distance = 0.0f;
     bool backgroundPlay = false;
 
 };
