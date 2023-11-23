@@ -49,16 +49,10 @@ public:
         }
             
         if(GetKey(olc::MINUS).bHeld)
-        {
             pan -= 1.0f * fElapsedTime;
-            if(pan < -1.0f) pan = -1.0f;
-        }
             
         if(GetKey(olc::EQUALS).bHeld)
-        {
             pan += 1.0f * fElapsedTime;
-            if(pan > 1.0f) pan = 1.0f;
-        }
 
         if(GetKey(olc::OEM_4).bHeld)
             pitch -= 1.0f * fElapsedTime;
@@ -67,16 +61,10 @@ public:
             pitch += 1.0f * fElapsedTime;
 
         if(GetKey(olc::DOWN).bHeld)
-        {
             volume -= 1.0f * fElapsedTime;
-            if(volume < 0.0f) volume = 0.0f;
-        }
             
         if(GetKey(olc::UP).bHeld)
-        {
             volume += 1.0f * fElapsedTime;
-            if(volume > 1.0f) volume = 1.0f;
-        }
         
         // Reset pan, pitch, and volume
         if(GetKey(olc::R).bPressed)
@@ -88,14 +76,17 @@ public:
         
         // Set pan, takes a sample ID (int), and a float
         // -1.0 to 1.0 where 0 is center
+        pan    = std::clamp(pan,   -1.0f, 1.0f);
         ma.SetPan(song1, pan);
 
         // Set pitch, takes a sample ID (int), and a float
         // 1.0 is normal pitch
+        pitch  = std::clamp(pitch,  0.0f, 2.0f);
         ma.SetPitch(song1, pitch);
 
         // Set volume, takes a sample ID (int), and a float
         // 0.0 to 1.0 where 1.0 is full volume
+        volume = std::clamp(volume, 0.0f, 1.0f);
         ma.SetVolume(song1, volume);
         
         // Gets the current playback position in the provided sample ID (int),
