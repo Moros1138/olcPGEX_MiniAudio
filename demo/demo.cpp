@@ -110,6 +110,10 @@ public:
         // returns float 0.0 to 1.0, nearer 1.0 is near the end
         seek = ma.GetCursorFloat(song1);
 
+        // Gets the current playback position in the provided sample ID (int),
+        // returns unsigned long long in milliseconds
+        cursor=ma.GetCursorMilliseconds(song1);
+
         // Draw Instructions and Indicators
         Clear(olc::BLACK);
 
@@ -137,6 +141,10 @@ public:
         DrawStringDecal((center - olc::vi2d{0, 24}) - (olc::vf2d(GetTextSize(ma.name + " Demo")) * scale / 2.0f), ma.name + " Demo", olc::WHITE, {scale, scale});
         DrawStringDecal(center - (GetTextSize("Hit <SPACE> To Toggle Playback") / 2), "Hit <SPACE> To Toggle Playback", olc::WHITE);
         DrawStringDecal((center + olc::vi2d{0, 16}) - (GetTextSize("Hit <R> TO Reset Pan/Pitch/Volume") / 2), "Hit <R> TO Reset Pan/Pitch/Volume", olc::WHITE);
+        
+        DrawStringDecal({5, 144}, \
+            "Cursor (ms): " + std::to_string(cursor),
+        olc::WHITE, {0.5f, 0.5f});
 
         DrawStringDecal({5, 160}, \
             "Music: Joy Ride [Full version] by MusicLFiles\n"
@@ -167,6 +175,7 @@ public:
     float volume = 1.0f;
     float distance = 0.0f;
     bool backgroundPlay = false;
+    unsigned long long cursor = 0ull;
 
 };
 
