@@ -4,7 +4,7 @@
 
 	+-------------------------------------------------------------+
 	|         OneLoneCoder Pixel Game Engine Extension            |
-	|                     MiniAudio v1.5                          |
+	|                     MiniAudio v1.6                          |
 	+-------------------------------------------------------------+
 
 	NOTE: UNDER ACTIVE DEVELOPMENT - THERE MAY BE BUGS/GLITCHES
@@ -68,7 +68,7 @@ namespace olc
     class MiniAudio : public olc::PGEX
     {
     public:
-        std::string name = "olcPGEX_MiniAudio v1.5";
+        std::string name = "olcPGEX_MiniAudio v1.6";
     
     public:
         MiniAudio();
@@ -429,9 +429,9 @@ namespace olc
     {
         unsigned long long cursor;
         ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
-
+        
+        cursor *= 1000;
         cursor /= sampleRate;
-        cursor /= 1000;
         
         return cursor;
     }
