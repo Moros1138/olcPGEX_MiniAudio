@@ -429,9 +429,9 @@ namespace olc
     {
         unsigned long long cursor;
         ma_sound_get_cursor_in_pcm_frames(vecSounds.at(id), &cursor);
-
+        
+        cursor *= 1000;
         cursor /= sampleRate;
-        cursor /= 1000;
         
         return cursor;
     }
