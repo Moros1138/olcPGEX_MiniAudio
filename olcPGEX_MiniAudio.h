@@ -158,7 +158,8 @@ namespace olc
         // the callback provides two floating point values to override, one for the left channel and one for the right channel. fill them with raw audio data.
         // for periodic functions, you can reference the fElapsedTime variable to track how much time passed this frame. Accumulate it somewhere to keep track of the total audio time.
         // if you do not change the output channels, the values previously used will be played.
-        void SetNoiseCallback(std::function<void(float& out_audio_data_left, float& out_audio_data_right, const float fElapsedTime)>callbackFunc);
+        void SetNoiseCallback(std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)>callbackFunc);
+        // clears the noise callback and resets the channel values to 0.0
         void ClearNoiseCallback();
         
     public: // ADVANCED FEATURES for those who want to use more of miniaudio
@@ -354,7 +355,6 @@ namespace olc
         */
 
         const int CHANNEL_COUNT{2};
-        const ma_uint32 SAMPLE_RATE{48000};
         using PlaybackFormat = float;
 
         ma_result result;
@@ -373,14 +373,13 @@ namespace olc
 
             if(noiseCallback)
             {
-                // NOTE: we are assuming a sample rate of 48000!
                 for(int i = 0; i < frameCount; i++)
                 {
                     // we send multiple callbacks into the future to get what sound we should be playing...
                     // for raw music data from programs like emulators, the user will probably just keep sending the same sound until it changes on their end.
                     // for periodic functions, they can use the elapsed time this callback sends to accurately determine what
                     // data should be sent precisely at that moment...
-                    noiseCallback(noiseLeftChannel,noiseRightChannel,float(i) / SAMPLE_RATE);
+                    noiseCallback(noiseLeftChannel, noiseRightChannel, 1.f / pDevice->sampleRate);
 
                     // Since we're reading each channel in individually, They have to be interlaced. Each frame we read one value from the left and right channel...
                     // From the miniaudio documentation
@@ -705,7 +704,7 @@ namespace olc
             throw MiniAudioWaveformException();
     }
 
-    void MiniAudio::SetNoiseCallback(std::function<void(float& out_audio_data_left, float& out_audio_data_right, const float fElapsedTime)>callbackFunc)
+    void MiniAudio::SetNoiseCallback(std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)>callbackFunc)
     {
         noiseCallback = callbackFunc;
     }
