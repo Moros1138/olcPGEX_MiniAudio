@@ -413,15 +413,15 @@ public:
 			name = "Bell 8-bit";
 		}
 
-		virtual float sound(const float dTime, Note&n, bool &bNoteFinished) override
+		virtual float sound(const float time, Note&n, bool &noteFinished) override
 		{
-			float amplitude = envelope(dTime, env, n.on, n.off);
-			if (amplitude <= 0.0) bNoteFinished = true;
+			float amplitude = envelope(time, env, n.on, n.off);
+			if (amplitude <= 0.0) noteFinished = true;
 
 			float sound =
-				+1.00 * osc(n.on - dTime, scale(n.id), Oscillator::SQUARE, 5.0, 0.001)
-				+ 0.50 * osc(n.on - dTime, scale(n.id + 12))
-				+ 0.25 * osc(n.on - dTime, scale(n.id + 24));
+				+1.00 * osc(n.on - time, scale(n.id), Oscillator::SQUARE, 5.0, 0.001)
+				+ 0.50 * osc(n.on - time, scale(n.id + 12))
+				+ 0.25 * osc(n.on - time, scale(n.id + 24));
 
 			return amplitude * sound * volume;
 		}
@@ -441,16 +441,16 @@ public:
 			name = "Harmonica";
 		}
 
-		virtual float sound(const float dTime, Note&n, bool &bNoteFinished) override
+		virtual float sound(const float time, Note&n, bool &noteFinished) override
 		{
-			float amplitude = envelope(dTime, env, n.on, n.off);
-			if (amplitude <= 0.0) bNoteFinished = true;
+			float amplitude = envelope(time, env, n.on, n.off);
+			if (amplitude <= 0.0) noteFinished = true;
 
 			float sound =
 				//+ 1.0  * synth::osc(n.on - dTime, synth::scale(n.id-12), synth::OSC_SAW_ANA, 5.0, 0.001, 100)
-				+ 1.00 * osc(n.on - dTime, scale(n.id), Oscillator::SQUARE, 5.0, 0.001)
-				+ 0.50 * osc(n.on - dTime, scale(n.id + 12), Oscillator::SQUARE)
-				+ 0.05  * osc(n.on - dTime, scale(n.id + 24), Oscillator::NOISE);
+				+ 1.00 * osc(n.on - time, scale(n.id), Oscillator::SQUARE, 5.0, 0.001)
+				+ 0.50 * osc(n.on - time, scale(n.id + 12), Oscillator::SQUARE)
+				+ 0.05  * osc(n.on - time, scale(n.id + 24), Oscillator::NOISE);
 
 			return amplitude * sound * volume;
 		}
@@ -470,13 +470,13 @@ public:
 			name = "Analog Saw";
 		}
 
-		virtual float sound(const float dTime, Note&n, bool &bNoteFinished) override
+		virtual float sound(const float time, Note&n, bool &noteFinished) override
 		{
-			float amplitude = envelope(dTime, env, n.on, n.off);
-			if (amplitude <= 0.0) bNoteFinished = true;
+			float amplitude = envelope(time, env, n.on, n.off);
+			if (amplitude <= 0.0) noteFinished = true;
 
 			float sound =
-				+ 1.00 * osc(n.on - dTime, scale(n.id), Oscillator::SAW_ANALOG, 5.0, 0.001);
+				+ 1.00 * osc(n.on - time, scale(n.id), Oscillator::SAW_ANALOG, 5.0, 0.001);
 
 			return amplitude * sound * volume;
 		}
