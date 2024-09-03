@@ -98,6 +98,18 @@ public:
         #endif
     }
 
+    bool OnUserDestroy() override
+    {
+        
+        for(Note&note : notes)
+        {
+            //Let's be nice and cleanup after ourselves...
+            ma.UnloadWaveform(note.waveformId);
+        }
+
+        return true;
+    }
+
     // The instance of the audio engine, no fancy config required.
     olc::MiniAudio ma;
 

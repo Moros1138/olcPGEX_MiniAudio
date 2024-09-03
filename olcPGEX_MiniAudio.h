@@ -124,7 +124,7 @@ namespace olc
         float GetCursorFloat(const int id);
 
 
-    public: //WAVEFORM AND NOISE GENERATION
+    public: // WAVEFORM AND NOISE GENERATION
         struct Waveform;
         // creates a new waveform and returns the id of the waveform
         const int CreateWaveform(const double amplitude, const double frequency, const ma_waveform_type waveformType);
@@ -206,7 +206,7 @@ namespace olc
 
         static float noiseLeftChannel;
         static float noiseRightChannel;
-        static std::function<void(float& out_data_channel_left, float& const out_data_channel_right, const float fElapsedTime)> noiseCallback;
+        static std::function<void(float& out_data_channel_left, float& out_data_channel_right, const float fElapsedTime)> noiseCallback;
     };
 
     /**
