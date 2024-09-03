@@ -155,7 +155,10 @@ public:
 		DrawStringDecal({0.f, 8.f},"Volume: <"+ std::to_string(volume) +"> LEFT, RIGHT");
 		DrawStringDecal({0.f, 16.f},"Pan: <"+ std::to_string(pan) +"> O, P");
 
-		DrawStringDecal({0.f, 128.f},"Reset Settings <R>");
+		DrawStringDecal({0.f, 120.f},"Reset Settings <R>");
+
+        olc::vf2d pianoStrSize{GetTextSize(piano)};
+        DrawRotatedStringDecal({ScreenWidth()/2.f, ScreenHeight() - pianoStrSize.y/2}, piano, 0.f, pianoStrSize/2, olc::WHITE, {0.65f, 1.f});
 
         #if defined(__EMSCRIPTEN__)
             return true;
@@ -219,6 +222,15 @@ public:
 
 	int selectedInstrumentInd{};
 	std::vector<std::unique_ptr<Instrument>>instruments;
+
+    const std::string piano{
+	    "  | |   |   |   |   | |   |   |   |   | |   | |   |   |   |\n"
+	    "A | | S |   |   | F | | G |   |   | J | | K | | L |   |   |\n"
+	    "__| |___|   |   |___| |___|   |   |___| |___| |___|   |   |__\n"
+	    "|     |     |     |     |     |     |     |     |     |     |\n"
+	    "|  Z  |  X  |  C  |  V  |  B  |  N  |  M  |  ,  |  .  |  /  |\n"
+	    "|_____|_____|_____|_____|_____|_____|_____|_____|_____|_____|"
+    };
 
     enum class Oscillator
 	{
