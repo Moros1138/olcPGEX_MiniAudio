@@ -30,7 +30,7 @@ public:
     bool OnUserCreate() override
     {
         
-        for(Note&note : notes)
+        for (Note&note : notes)
         {
             // When calling CreateWaveform, you'll be given a unique ID used in all other Waveform functions. Store it somewhere.
             note.waveformId = ma.CreateWaveform(amplitude, note.frequency, selectedWaveform);
@@ -42,6 +42,20 @@ public:
     bool OnUserUpdate(float fElapsedTime) override
     {
         fElapsedTime = (fElapsedTime > thirtyFramesPerSecond) ? thirtyFramesPerSecond : fElapsedTime;
+        
+        olc::Pixel backgroundCol{olc::VERY_DARK_GREY};
+
+        if(clickToStart)
+        {
+            if(GetMouse(olc::Mouse::LEFT).bPressed)
+                clickToStart=false;
+
+            GradientFillRectDecal({}, {float(ScreenWidth()), ScreenHeight()/2.f}, olc::BLACK, backgroundCol, backgroundCol, olc::BLACK);
+            GradientFillRectDecal({0.f, ScreenHeight()/2.f}, {float(ScreenWidth()), ScreenHeight()/2.f}, backgroundCol, olc::BLACK, olc::BLACK, backgroundCol);
+            olc::vf2d clickToStartTextSize{GetTextSize("Click to Start!")};
+            DrawRotatedStringDecal({ScreenWidth()/2.f, 128.f}, "Click to Start!", 0.f, clickToStartTextSize/2, olc::WHITE, {2.f, 2.f});
+            return true;
+        }
 
         bool keyPressed{false};
 
@@ -58,7 +72,7 @@ public:
             amplitude = std::max(0.f, amplitude - 0.1f);
         }
         
-        for(Note&note : notes)
+        for (Note&note : notes)
         {
             if(GetKey(note.key).bPressed)
             {
@@ -76,7 +90,6 @@ public:
             ma.SetWaveformAmplitude(note.waveformId, amplitude);
         }
         
-        olc::Pixel backgroundCol{olc::VERY_DARK_GREY};
         if(keyPressed)
             backgroundCol = olc::VERY_DARK_BLUE;
 
@@ -87,6 +100,20 @@ public:
         std::stringstream s;
         s << std::fixed << std::setprecision(1) << amplitude;
         DrawStringDecal({0,8}, "Amplitude < " + s.str() + " >   UP, DOWN");
+        
+        for (float drawY{24}; Note&note : notes)
+        {
+            if(!ma.IsWaveformPlaying(note.waveformId))
+                continue;
+
+            if(drawY == 24)
+                DrawStringDecal({0.f, drawY - 8.f},"Playing: ");
+
+            std::stringstream notePlayingStr;
+            notePlayingStr << std::setw(5) << note.displayName << std::setw(7) << std::fixed << std::setprecision(2) << note.frequency;
+            DrawStringDecal({0.f, drawY}, "   "+ notePlayingStr.str());
+            drawY += 8;
+        }
 
         olc::vf2d pianoStrSize{GetTextSize(piano)};
         DrawRotatedStringDecal({ScreenWidth()/2.f, 128.f}, piano, 0.f, pianoStrSize/2, olc::WHITE, {0.65f, 1.f});
@@ -97,11 +124,10 @@ public:
             return !GetKey(olc::ESCAPE).bPressed;
         #endif
     }
-
     bool OnUserDestroy() override
     {
         
-        for(Note&note : notes)
+        for (Note&note : notes)
         {
             //Let's be nice and cleanup after ourselves...
             ma.UnloadWaveform(note.waveformId);
@@ -115,6 +141,8 @@ public:
 
     ma_waveform_type selectedWaveform{ma_waveform_type_sine};
     float amplitude{0.1f};
+
+    bool clickToStart{true};
 
     struct Note
     {
@@ -137,9 +165,9 @@ public:
         {"E",   329.63f,    olc::B},
         {"F",   349.23f,    olc::N},
         {"F#",  369.99f,    olc::J},
-        {"G",   392.f,      olc::M},
-        {"G#",  415.3f,     olc::K},
-        {"A",   440.f,      olc::COMMA},
+        {"G",   392.00f,    olc::M},
+        {"G#",  415.30f,    olc::K},
+        {"A",   440.00f,    olc::COMMA},
         {"A#",  466.16f,    olc::L},
         {"B",   493.88f,    olc::PERIOD},
         {"C",   523.25f,    olc::OEM_2},
@@ -147,10 +175,10 @@ public:
 
     const std::unordered_map<ma_waveform_type,std::string>waveformToName
     {
-        {ma_waveform_type_sine,"SINE"},
-        {ma_waveform_type_square,"SQUARE"},
-        {ma_waveform_type_triangle,"TRIANGLE"},
-        {ma_waveform_type_sawtooth,"SAWTOOTH"},
+        {ma_waveform_type_sine, "SINE"},
+        {ma_waveform_type_square, "SQUARE"},
+        {ma_waveform_type_triangle, "TRIANGLE"},
+        {ma_waveform_type_sawtooth, "SAWTOOTH"},
     };
 
     const std::string piano{

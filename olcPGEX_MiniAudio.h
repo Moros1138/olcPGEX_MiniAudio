@@ -344,9 +344,6 @@ namespace olc
 
     void MiniAudio::data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
     {
-        // the run time of the audio callback engine, useful for periodic functions playing through the custom callback.
-        static double runTime{};
-
         if(!MiniAudio::backgroundPlay && !pge->IsFocused())
             return;
 
@@ -383,7 +380,7 @@ namespace olc
                     // for raw music data from programs like emulators, the user will probably just keep sending the same sound until it changes on their end.
                     // for periodic functions, they can use the elapsed time this callback sends to accurately determine what
                     // data should be sent precisely at that moment...
-                    noiseCallback(noiseLeftChannel,noiseRightChannel,runTime + float(i) / SAMPLE_RATE);
+                    noiseCallback(noiseLeftChannel,noiseRightChannel,float(i) / SAMPLE_RATE);
 
                     // Since we're reading each channel in individually, They have to be interlaced. Each frame we read one value from the left and right channel...
                     // From the miniaudio documentation
@@ -437,8 +434,6 @@ namespace olc
                 break;  /* Reached EOF. */
             }
         }
-
-        runTime += double(totalFramesRead)/SAMPLE_RATE;
     }
     
     void MiniAudio::SetBackgroundPlay(bool state)
