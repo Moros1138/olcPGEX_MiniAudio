@@ -43,8 +43,8 @@ public:
 				bool noteFinished{false};
 				float noise = note.instrument->sound(audioRuntime, note, noteFinished); 
 
-				noiseLeftChannel += noise * lerp(0.f, 1.f, pan/2 + 0.5f); // This lerp formula shrinks the -1 to 1 range to 0 to 1, which determines percentage of the total noise to play in each side.
-				noiseRightChannel += noise * lerp(1.f, 0.f, pan/2 + 0.5f);
+				noiseLeftChannel += noise * lerp(1.f, 0.f, pan/2 + 0.5f); // This lerp formula shrinks the -1 to 1 range to 0 to 1, which determines percentage of the total noise to play in each side.
+				noiseRightChannel += noise * lerp(0.f, 1.f, pan/2 + 0.5f);
 			}
 
 			// Each frame the callback receives will give us a duration that frame takes up in real time.
@@ -126,9 +126,9 @@ public:
 			volume = std::max(0.f, volume - 1.f * fElapsedTime);
 
 		if(GetKey(olc::O).bHeld)
-			pan = std::min(1.f, pan + 1.f * fElapsedTime);
-		if(GetKey(olc::P).bHeld)
 			pan = std::max(-1.f, pan - 1.f * fElapsedTime);
+		if(GetKey(olc::P).bHeld)
+			pan = std::min(1.f, pan + 1.f * fElapsedTime);
 
 		if(GetKey(olc::R).bPressed)
 		{
