@@ -6,7 +6,10 @@ files. Because it's built on top of [miniaudio](https://miniaud.io), it requires
 to no additional build configurations in order to be built
 for cross-platform.
 
-See the emscripten version [running on the web here](https://www.moros1138.com/demos/olcPGEX_MiniAudio/).
+See the emscripten versions of the demos here:
+* [Main Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/).
+* [Waveform Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/demo_waveform.html).
+* [Synthesis Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/demo_synthesis.html).
 
 # This is an olc::PixelGameEngine Extension
 
@@ -120,3 +123,5 @@ That's it!
 # Acknowledgements
 
 I'd like to give a special thanks for JavidX9 (aka OneLoneCoder), AniCator, JustinRichardsMusic, and everybody else who was a part of that audiophile conversation when I asked for help! Your patience and feedback made this project possible. Thank you!
+
+I'd also like to single out sigonasr2 (Dense Dance 2π) for the waveform functionality and for crafting the demos for them!
