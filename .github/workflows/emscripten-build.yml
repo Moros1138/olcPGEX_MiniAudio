@@ -33,6 +33,7 @@ jobs:
 
       - name: Configure the build
         run: |
+          source emsdk/emsdk_env.sh
           cd demo
           make emscripten
         shell: bash
