@@ -49,8 +49,8 @@ jobs:
         run: |
           ls -Al
           scp -P ${{ secrets.REMOTE_SERVER_PORT }} -r demo ${{ secrets.REMOTE_SERVER_USER }}@${{ secrets.REMOTE_SERVER_ADDR }}:${{ secrets.REMOTE_SERVER_DIRECTORY }}/
-      env:
-        SSH_KNOWN_HOSTS: ${{ secrets.REMOTE_SERVER_ADDR }}
+        env:
+          SSH_KNOWN_HOSTS: ${{ secrets.REMOTE_SERVER_ADDR }}
 
 
 
