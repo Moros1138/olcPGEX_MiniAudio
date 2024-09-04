@@ -40,12 +40,12 @@ jobs:
           make emscripten
         shell: bash
 
-    - name: copy file via ssh password
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.REMOTE_SERVER_ADDR }}
-        username: ${{ secrets.REMOTE_SERVER_USER }}
-        key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
-        port: ${{ secrets.REMOTE_SERVER_PORT }}
-        source: "demo/*.html,demo/*.js,demo/*.wasm,demo/*.data"
-        target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.REMOTE_SERVER_ADDR }}
+          username: ${{ secrets.REMOTE_SERVER_USER }}
+          key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
+          port: ${{ secrets.REMOTE_SERVER_PORT }}
+          source: "demo/*.html,demo/*.js,demo/*.wasm,demo/*.data"
+          target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
