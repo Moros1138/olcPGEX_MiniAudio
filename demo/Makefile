@@ -1,6 +1,6 @@
 INCLUDE   := -I../ -I../third_party/miniaudio -I../third_party/olcPixelGameEngine
-EM_FLAGS  := -std=c++20 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 --shell-file shell.html
 GCC_FLAGS := -std=c++20 -O2 -lX11 -lGL -lpthread -lpng -lstdc++fs -ldl -lm
+EM_FLAGS  := -std=c++20 -O2 -s ALLOW_MEMORY_GROWTH=1 -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -s USE_LIBPNG=1 --shell-file shell.html --preload-file=./assets@assets
 
 .PHONY: all linux emscripten clean
 
@@ -16,13 +16,13 @@ demo_waveform: demo_waveform.cpp
 	g++ demo_waveform.cpp -o demo_waveform ${INCLUDE} ${GCC_FLAGS}
 
 demo.html: demo.cpp
-	em++ demo.cpp -o demo.html ${INCLUDE} ${EM_FLAGS} --preload-file=./assets@assets
+	em++ demo.cpp -o demo.html ${INCLUDE} ${EM_FLAGS}
 
 demo_synthesis.html: demo_synthesis.cpp
-	em++ demo_synthesis.cpp -o demo_synthesis ${INCLUDE} ${EM_FLAGS} --preload-file=./assets@assets
+	em++ demo_synthesis.cpp -o demo_synthesis.html ${INCLUDE} ${EM_FLAGS}
 
 demo_waveform.html: demo.cpp
-	em++ demo_waveform.cpp -o demo_waveform.html ${INCLUDE} ${EM_FLAGS} --preload-file=./assets@assets
+	em++ demo_waveform.cpp -o demo_waveform.html ${INCLUDE} ${EM_FLAGS}
 
 linux: demo demo_synthesis demo_waveform
 
