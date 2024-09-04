@@ -69,18 +69,6 @@ public:
         
         olc::Pixel backgroundCol{olc::VERY_DARK_GREY};
 
-        if(clickToStart)
-        {
-            if(GetMouse(olc::Mouse::LEFT).bPressed)
-                clickToStart=false;
-
-            GradientFillRectDecal({}, {float(ScreenWidth()), ScreenHeight()/2.f}, olc::BLACK, backgroundCol, backgroundCol, olc::BLACK);
-            GradientFillRectDecal({0.f, ScreenHeight()/2.f}, {float(ScreenWidth()), ScreenHeight()/2.f}, backgroundCol, olc::BLACK, olc::BLACK, backgroundCol);
-            olc::vf2d clickToStartTextSize{GetTextSize("Click to Start!")};
-            DrawRotatedStringDecal({ScreenWidth()/2.f, 128.f}, "Click to Start!", 0.f, clickToStartTextSize/2, olc::WHITE, {2.f, 2.f});
-            return true;
-        }
-
 		bool keyPressed{false};
 
 		for(Note& note : notes)
@@ -171,8 +159,6 @@ public:
     olc::MiniAudio ma;
 
 	std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)> noiseCallbackFunc;
-
-    bool clickToStart{true};
 
 	double audioRuntime{}; // A running timer of how long the audio engine has been running.
 
