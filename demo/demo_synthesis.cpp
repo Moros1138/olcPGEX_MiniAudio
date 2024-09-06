@@ -95,6 +95,8 @@ public:
 				{
 					note.off = audioRuntime;
 				}
+
+				note.active = false;
 			}
 		}
 
