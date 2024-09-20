@@ -80,9 +80,11 @@ namespace olc
     public:
         MiniAudio();
         ~MiniAudio();
+        virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
         static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
         static bool m_background_playback;
         static std::vector<float> m_callback_buffer;
+
     private:
         ma_device m_device;
         ma_device_config m_device_config;
@@ -163,6 +165,15 @@ namespace olc
     MiniAudio::~MiniAudio()
     {
         PGEX_MA_LOG("Test 2");
+    }
+
+    bool MiniAudio::OnBeforeUserUpdate(float& fElapsedTime)
+    {
+        #ifdef __EMSCRIPTEN__
+        ma_resource_manager_process_next_job(&m_resource_manager);
+        #endif
+
+        return false;
     }
 
     void MiniAudio::data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
