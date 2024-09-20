@@ -25,6 +25,7 @@ public:
         // 
         // see how we get a pointer of the song1 sound?
         ma_sound_set_position(ma.GetSounds()[song1], 0.0f, 0.0f, 0.0f);
+        std::cout << "This demo was built with the latest workflow.\n";
         return true;
     }
     
