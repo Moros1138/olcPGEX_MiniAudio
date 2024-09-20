@@ -16,7 +16,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Set up Python (required for Emscripten)
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
