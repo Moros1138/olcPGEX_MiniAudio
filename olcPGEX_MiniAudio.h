@@ -80,6 +80,9 @@ namespace olc
     public:
         MiniAudio();
         ~MiniAudio();
+        static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+        static bool m_background_playback;
+        static std::vector<float> m_callback_buffer;
     private:
         ma_device m_device;
         ma_device_config m_device_config;
@@ -118,6 +121,9 @@ void PGEX_MA_LOG(const std::string_view& message = "", std::source_location loca
 
 namespace olc
 {
+    bool MiniAudio::m_background_playback = false;
+    std::vector<float> MiniAudio::m_callback_buffer;
+    
     MiniAudio::MiniAudio() : olc::PGEX(true)
     {
         m_device_config = ma_device_config_init(DEVICE_TYPE);
@@ -157,6 +163,56 @@ namespace olc
     MiniAudio::~MiniAudio()
     {
         PGEX_MA_LOG("Test 2");
+    }
+
+    void MiniAudio::data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
+    {
+        /**
+         * Get the instance of the miniaudio pgex for use later
+         * in the callback
+         */
+        MiniAudio* ma = (MiniAudio*)pDevice->pUserData;
+        
+        /**
+         * If the instance of the miniaudio pgex has, for some
+         * reason has not been set, bail
+         */
+        if(ma == nullptr)
+            throw std::runtime_error{"unable to access miniaudio pgex instance from data_callback"};
+
+        /**
+         * If background playback isn't enabled and the app
+         * does not have focus, bail
+         */
+        if(!MiniAudio::m_background_playback && !pge->IsFocused())
+            return;
+
+        /**
+         * If required, resize the buffer.
+         */
+        if(m_callback_buffer.size() != (frameCount * DEVICE_CHANNELS))
+        {
+            m_callback_buffer.resize(frameCount * DEVICE_CHANNELS, 0);
+            PGEX_MA_LOG(std::format("had to resize to callback buffer to {} bytes", m_callback_buffer.size() * sizeof(float)));
+        }
+
+        /**
+         * Read pcm frames from the engine to the device output
+         */
+        ma_engine_read_pcm_frames(&ma->m_engine, m_callback_buffer.data(), frameCount, NULL);
+
+        /**
+         * TODO: implement waveforms
+         */
+        
+        /**
+         * TODO: implement noise generators
+         */
+
+        /**
+         * Copy the results to the output buffer
+         */
+        memcpy(pOutput, m_callback_buffer.data(), m_callback_buffer.size() * sizeof(float));
     }
 
 } // olc
