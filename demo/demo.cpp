@@ -1,7 +1,4 @@
-#define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-
-#define OLC_PGEX_MINIAUDIO
 #include "olcPGEX_MiniAudio.h"
 
 constexpr float thirtyFramesPerSecond = 1.0f / 30.f;

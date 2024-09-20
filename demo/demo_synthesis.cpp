@@ -1,7 +1,4 @@
-#define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-
-#define OLC_PGEX_MINIAUDIO
 #include "olcPGEX_MiniAudio.h"
 
 constexpr int NOTE_COUNT = 17;
