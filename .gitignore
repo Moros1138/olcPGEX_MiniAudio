@@ -1,4 +1,3 @@
 .vscode
-demo/demo*
-!demo/demo.cpp
-
+build
+emscripten-build

@@ -1,7 +1,4 @@
-#define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-
-#define OLC_PGEX_MINIAUDIO
 #include "olcPGEX_MiniAudio.h"
 
 constexpr float thirtyFramesPerSecond = 1.0f / 30.f;
@@ -28,6 +25,7 @@ public:
         // 
         // see how we get a pointer of the song1 sound?
         ma_sound_set_position(ma.GetSounds()[song1], 0.0f, 0.0f, 0.0f);
+        std::cout << "This demo was built with the latest workflow.\n";
         return true;
     }
     
