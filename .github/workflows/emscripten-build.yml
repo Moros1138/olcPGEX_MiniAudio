@@ -36,8 +36,6 @@ jobs:
       - name: Build with Emscripten
         run: |
           source emsdk/emsdk_env.sh
-          cd demo
-          make emscripten
+          emcmake cmake . -B emscripten-build
+          cmake --build emscripten-build --config=Release
         shell: bash
-
-
