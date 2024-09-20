@@ -86,6 +86,10 @@ namespace olc
         
         ma_resource_manager m_resource_manager;
         ma_resource_manager_config m_resource_manager_config;
+
+        ma_engine m_engine;
+        ma_engine_config m_engine_config;
+        bool m_initialized = false;
     };
 }
 
@@ -139,6 +143,15 @@ namespace olc
 
         if(ma_resource_manager_init(&m_resource_manager_config, &m_resource_manager) != MA_SUCCESS)
             throw std::runtime_error{"PGEX_MiniAudio: failed to initialize resource manager"};
+    
+        m_engine_config = ma_engine_config_init();
+        m_engine_config.pDevice = &m_device;
+        m_engine_config.pResourceManager = &m_resource_manager;
+    
+        if(ma_engine_init(&m_engine_config, &m_engine) != MA_SUCCESS)
+            throw std::runtime_error{"PGEX_MiniAudio: failed to initialize engine"};
+
+        m_initialized = true;
     }
 
     MiniAudio::~MiniAudio()
