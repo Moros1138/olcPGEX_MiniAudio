@@ -89,9 +89,10 @@ namespace olc
 #ifdef OLC_PGEX_MINIAUDIO
 #undef OLC_PGEX_MINIAUDIO
 
-static constexpr int DEVICE_SAMPLE_RATE  = 48000;
-static constexpr ma_format DEVICE_FORMAT = ma_format_f32;
-static constexpr int DEVICE_CHANNELS     = 2;
+static constexpr int            DEVICE_CHANNELS     = 2;
+static constexpr ma_format      DEVICE_FORMAT       = ma_format_f32;
+static constexpr int            DEVICE_SAMPLE_RATE  = 48000;
+static constexpr ma_device_type DEVICE_TYPE         = ma_device_type_playback;
 
 void PGEX_MA_LOG(const std::string_view& message = "", std::source_location location = std::source_location::current())
 {
