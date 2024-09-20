@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.REMOTE_SERVER_USER }}
           key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
           port: ${{ secrets.REMOTE_SERVER_PORT }}
-          source: "emscripten-build/demo.html,emscripten-build/demo.js,emscripten-builddemo.wasm,emscripten-build/demo.data"
+          source: "emscripten-build/demo.html,emscripten-build/demo.js,emscripten-build/demo.wasm,emscripten-build/demo.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
 
