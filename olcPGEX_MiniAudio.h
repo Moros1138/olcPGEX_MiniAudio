@@ -112,7 +112,15 @@ namespace olc
 {
     MiniAudio::MiniAudio() : olc::PGEX(true)
     {
-        PGEX_MA_LOG();
+        m_device_config = ma_device_config_init(DEVICE_TYPE);
+        m_device_config.playback.format = DEVICE_FORMAT;
+        m_device_config.playback.channels = DEVICE_CHANNELS;
+        m_device_config.sampleRate = DEVICE_SAMPLE_RATE;
+        m_device_config.dataCallback = MiniAudio::data_callback;
+        m_device_config.pUserData = this;
+
+        if(ma_device_init(NULL, &m_device_config, &m_device) != MA_SUCCESS)
+            throw std::runtime_error{"PGEX_MiniAudio: failed to initialize device"};
     }
 
     MiniAudio::~MiniAudio()
