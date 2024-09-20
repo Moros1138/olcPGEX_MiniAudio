@@ -83,6 +83,9 @@ namespace olc
     private:
         ma_device m_device;
         ma_device_config m_device_config;
+        
+        ma_resource_manager m_resource_manager;
+        ma_resource_manager_config m_resource_manager_config;
     };
 }
 
@@ -122,6 +125,20 @@ namespace olc
 
         if(ma_device_init(NULL, &m_device_config, &m_device) != MA_SUCCESS)
             throw std::runtime_error{"PGEX_MiniAudio: failed to initialize device"};
+
+        m_resource_manager_config = ma_resource_manager_config_init();
+        m_resource_manager_config.decodedFormat     = DEVICE_FORMAT;
+        m_resource_manager_config.decodedChannels   = DEVICE_CHANNELS;
+        m_resource_manager_config.decodedSampleRate = DEVICE_SAMPLE_RATE;
+    
+    #ifdef __EMSCRIPTEN__
+        m_resource_manager_config.jobThreadCount = 0;                           
+        m_resource_manager_config.flags |= MA_RESOURCE_MANAGER_FLAG_NON_BLOCKING;
+        m_resource_manager_config.flags |= MA_RESOURCE_MANAGER_FLAG_NO_THREADING;
+    #endif
+
+        if(ma_resource_manager_init(&m_resource_manager_config, &m_resource_manager) != MA_SUCCESS)
+            throw std::runtime_error{"PGEX_MiniAudio: failed to initialize resource manager"};
     }
 
     MiniAudio::~MiniAudio()
