@@ -228,7 +228,8 @@ endfunction()
 add_executable(
     demo
     demo/demo.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h
@@ -237,7 +238,8 @@ add_executable(
 add_executable(
     demo_synthesis
     demo/demo_synthesis.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h
@@ -246,7 +248,8 @@ add_executable(
 add_executable(
     demo_waveform
     demo/demo_waveform.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h
