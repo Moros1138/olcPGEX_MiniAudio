@@ -73,11 +73,16 @@
 
 namespace olc
 {
+    
+    
     class MiniAudio : public olc::PGEX
     {
     public:
         MiniAudio();
         ~MiniAudio();
+    private:
+        ma_device m_device;
+        ma_device_config m_device_config;
     };
 }
 
