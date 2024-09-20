@@ -110,15 +110,32 @@ Then use them in your OnUserUpdate, like so
         if(GetKey(olc::SPACE).bPressed)
             ma.Toggle(song1);
 ```
-# Building
+# Building In Your Projects
 
-For Windows MSVC and Emscripten the instructions match any other olcPixelGameEngine!
+For Windows MSVC the instructions match any other olcPixelGameEngine!
+
+For Emscripten, add ``-sSTACK_SIZE=131072`` to the build command. This doubles the default stack size used by emscripten. Without it, emscripten runs out of stack space causing it enter a forever loop with "index out of bounds" errors and exception!
 
 For Linux, add ``-ldl`` to the build command..
 
 TODO: instructions for MacOS, I'm not a Mac user and have no way to test it!
 
 That's it!
+
+# Building The Demos
+
+To build the demos for Linux, MacOS, or Windows:
+```
+cmake . -B build
+cmake --build build
+```
+
+To build the demos for emscripten:
+
+```
+cmake . -B emscripten-build
+cmake --build emscripten-build
+```
 
 # Acknowledgements
 
