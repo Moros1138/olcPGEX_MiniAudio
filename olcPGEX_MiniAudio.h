@@ -73,7 +73,32 @@
 
 namespace olc
 {
+    struct SoundFileBuffer
+    {
+        SoundFileBuffer();
+        SoundFileBuffer(ma_engine* engine);
+        ~SoundFileBuffer();
+
+        bool Load(const std::string& path, olc::ResourcePack* pack = nullptr);
+        void Unload();
+
+        std::vector<char> m_buffer;
+        int m_count = 0;
+        ma_engine* m_engine;
+        bool m_loaded = false;
+        std::string m_path;
+    };
     
+    struct Sound
+    {
+        ma_sound m_sound;
+        ma_uint64 m_length_in_pcm_frames = 0;
+        float m_length_in_seconds = 0;
+        std::string m_path;
+        bool m_play_once = false;
+        
+        const std::string string();
+    };
     
     class MiniAudio : public olc::PGEX
     {
@@ -226,6 +251,88 @@ namespace olc
         memcpy(pOutput, m_callback_buffer.data(), m_callback_buffer.size() * sizeof(float));
     }
 
+
+    SoundFileBuffer::SoundFileBuffer()
+        : m_engine(nullptr), m_loaded(false)
+    {
+    }
+
+    SoundFileBuffer::SoundFileBuffer(ma_engine* engine)
+        : m_engine(engine), m_loaded(false)
+    {
+    }
+    
+    SoundFileBuffer::~SoundFileBuffer()
+    {
+    }
+
+    bool SoundFileBuffer::Load(const std::string& path, olc::ResourcePack* pack)
+    {
+        if(m_loaded)
+        {
+            m_count++;
+            PGEX_MA_LOG(std::format("reusing sound file buffer at path: {}", m_path));
+            return true;
+        }
+
+        if(pack != nullptr)
+        {
+            // TODO: robustify
+            m_buffer = pack->GetFileBuffer(path).vMemory;
+            PGEX_MA_LOG("loading sound file via olc::ResourcePack");
+        }
+        else
+        {
+            // TODO: robustify
+            std::ifstream file(path, std::ios::binary | std::ios::ate);
+            m_buffer.resize(file.tellg(), 0);
+            file.seekg(0, std::ios::beg);
+        
+            file.read(m_buffer.data(), m_buffer.size());
+            PGEX_MA_LOG("loading sound file via ifstream");    
+        }
+
+        if(ma_resource_manager_register_encoded_data(m_engine->pResourceManager, path.c_str(), m_buffer.data(), m_buffer.size()) != MA_SUCCESS)
+            return false;
+
+        m_count = 1;
+        m_loaded = true;
+        m_path = path;
+        
+        return true;
+    }
+
+    void SoundFileBuffer::Unload()
+    {
+        if(!m_loaded)
+            throw std::runtime_error{"tried to unload a sound file buffer which isn't loaded"};
+
+        m_count--;
+        
+        PGEX_MA_LOG(std::format("decreased count of: {} to {}", m_path, m_count));
+        
+        if(m_count == 0)
+        {
+            if(ma_resource_manager_unregister_data(m_engine->pResourceManager, m_path.c_str()))
+                throw std::runtime_error{"failed to unregister data from the resource manager"};
+
+            m_loaded = false;
+            
+            PGEX_MA_LOG(std::format("unloaded sound file buffer with path: {}", m_path));
+        }
+    }
+
+    const std::string Sound::string()
+    {
+        return std::format(
+            "{}, frames({}) seconds({}) play_once({})",
+            m_path,
+            m_length_in_pcm_frames,
+            m_length_in_seconds,
+            m_play_once
+        );
+    }
+    
 } // olc
 
 #endif
