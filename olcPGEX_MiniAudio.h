@@ -115,6 +115,11 @@ namespace olc
         const int LoadSound(const std::string& path, olc::ResourcePack* pack = nullptr, bool playOnce = false);
         void UnloadSound(const int id);
     
+    public: // playback routines
+        void Play(const int id, bool looping = false);
+        void Stop(const int id);
+        void Pause(const int id);
+        void Toggle(const int id);
     private:
         const int find_or_create_empty_sound_slot();
 
@@ -229,7 +234,6 @@ namespace olc
         #ifdef __EMSCRIPTEN__
         ma_resource_manager_process_next_job(&m_resource_manager);
         #endif
-
         return false;
     }
 
@@ -357,6 +361,46 @@ namespace olc
         m_sounds.at(id) = nullptr;
     }
 
+    void MiniAudio::Play(const int id, bool looping)
+    {
+        if(ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+            return;
+        
+        if(looping)
+            ma_sound_set_looping(&m_sounds.at(id)->m_sound, true);
+        
+        ma_sound_start(&m_sounds.at(id)->m_sound);
+    }
+    
+
+    void MiniAudio::Stop(const int id)
+    {
+        if(!ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+            return;
+        
+        ma_sound_stop(&m_sounds.at(id)->m_sound);
+        ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, 0);
+    }
+
+    void MiniAudio::Pause(const int id)
+    {
+        if(!ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+            return;
+        
+        ma_sound_stop(&m_sounds.at(id)->m_sound);
+    }
+
+    void MiniAudio::Toggle(const int id)
+    {
+        if(ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+        {
+            ma_sound_stop(&m_sounds.at(id)->m_sound);
+            return;
+        }
+        
+        ma_sound_start(&m_sounds.at(id)->m_sound);
+    }
+    
     const int MiniAudio::find_or_create_empty_sound_slot()
     {
         /**
