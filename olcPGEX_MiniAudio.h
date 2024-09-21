@@ -615,7 +615,7 @@ namespace olc
                 /**
                  * mix waveform buffer into the engine buffer, simple add
                  */
-                for(int i = 0; i < framesRead * DEVICE_CHANNELS; i++)
+                for(ma_uint64 i = 0; i < framesRead * DEVICE_CHANNELS; i++)
                 {
                     m_engine_buffer[i] += m_waveform_buffer[i];
                 }
@@ -627,7 +627,7 @@ namespace olc
          */
         if(m_noise_callback)
         {
-            for(int i = 0; i < frameCount; i++)
+            for(ma_uint32 i = 0; i < frameCount; i++)
             {
                 m_noise_callback(m_noise_left_channel, m_noise_right_channel, 1.0f / DEVICE_SAMPLE_RATE);
 
@@ -784,7 +784,7 @@ namespace olc
 
     void MiniAudio::Seek(const int id, const float& location)
     {
-        ma_uint64 frame_to_seek_to = m_sounds.at(id)->m_length_in_pcm_frames * location;
+        ma_uint64 frame_to_seek_to = static_cast<ma_uint64>(m_sounds.at(id)->m_length_in_pcm_frames * location);
         ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, frame_to_seek_to);
     }
 
@@ -871,7 +871,7 @@ namespace olc
         }
 
         // no empty slots, make more room!
-        const int id = m_waveforms.size();
+        const int id = static_cast<int>(m_waveforms.size());
         m_waveforms.emplace_back(amplitude, frequency, waveformType);
         return id;
     }
@@ -988,7 +988,7 @@ namespace olc
         /**
          * create a new slot
          */
-        int i = m_sounds.size();
+        int i = static_cast<int>(m_sounds.size());
         m_sounds.push_back(new Sound());
         return i;
     }
