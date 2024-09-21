@@ -6,6 +6,7 @@ project(olcPGEX_MiniAudio)
 # Options you can set via command-line
 option(HAS_TERMINAL "Show a terminal window for STDOUT/STDERR" ON)
 option(UPDATE_GIT_SUBMODULES "Update Git submodules" ON)
+option(TEST "Build In Test Mode" OFF)
 
 if (UPDATE_GIT_SUBMODULES)
     message(STATUS "Updating Git submodules...")
@@ -154,17 +155,23 @@ function(add_common_settings target)
     ######################################################################
     if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
         
+        if (TEST)
+            target_compile_definitions(${target} PRIVATE -DOLC_PGE_HEADLESS)
+        endif()
+
         # OpenGL
-        set(OpenGL_GL_PREFERENCE LEGACY)
-        find_package(OpenGL REQUIRED)
-        include_directories(${OpenGL_INCLUDE_DIRS})
-        target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
+        if (NOT TEST)
+            set(OpenGL_GL_PREFERENCE LEGACY)
+            find_package(OpenGL REQUIRED)
+            include_directories(${OpenGL_INCLUDE_DIRS})
+            target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
 
-        # X11
-        find_package(X11 REQUIRED)
-        target_link_libraries(${target} X11::X11)
+            # X11
+            find_package(X11 REQUIRED)
+            target_link_libraries(${target} X11::X11)
 
-        include_directories(${X11_INCLUDE_DIRS})
+            include_directories(${X11_INCLUDE_DIRS})
+        endif()
 
         # Threads
         find_package(Threads REQUIRED)
