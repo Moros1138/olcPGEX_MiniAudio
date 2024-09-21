@@ -142,6 +142,9 @@ namespace olc
         static bool m_background_playback;
         static std::vector<float> m_engine_buffer;
         static std::vector<float> m_waveform_buffer;
+        static std::function<void(float& out_data_channel_left, float& out_data_channel_right, const float fElapsedTime)> m_noise_callback;
+        static float m_noise_left_channel;
+        static float m_noise_right_channel;
 
     public: // configuration
         void SetBackgroundPlay(const bool state);
@@ -220,6 +223,9 @@ namespace olc
         // ADVANCED USAGE, retrieval of raw ma_waveform object
         ma_waveform* GetWaveform(const int id);
     
+    public: // noise generation
+        void SetNoiseCallback(std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)>callbackFunc);
+        void ClearNoiseCallback();
     public: // advanced features
         ma_device* GetDevice();
         ma_engine* GetEngine();
@@ -429,6 +435,10 @@ namespace olc
     std::vector<float> MiniAudio::m_waveform_buffer;
 
     std::vector<MiniAudio::Waveform> MiniAudio::m_waveforms;
+    std::function<void(float& out_audio_data_left, float& out_audio_data_right, const float fElapsedTime)> MiniAudio::m_noise_callback;
+    float MiniAudio::m_noise_left_channel = 0.0f;
+    float MiniAudio::m_noise_right_channel = 0.0f;
+
     MiniAudio::MiniAudio() : olc::PGEX(true)
     {
         m_device_config = ma_device_config_init(DEVICE_TYPE);
@@ -592,8 +602,19 @@ namespace olc
         }
         
         /**
-         * TODO: implement noise generators
+         * noise generators
          */
+        if(m_noise_callback)
+        {
+            for(int i = 0; i < frameCount * DEVICE_CHANNELS; i += 2)
+            {
+                m_noise_callback(m_noise_left_channel, m_noise_right_channel, 1.0f / DEVICE_SAMPLE_RATE);
+
+                m_engine_buffer[i    ] += m_noise_left_channel;
+                m_engine_buffer[i + 1] += m_noise_right_channel;
+            }
+        }
+        
         /**
          * clamp the output to a range of -1.0f to 1.0f
          */
@@ -888,6 +909,18 @@ namespace olc
     const ma_waveform_type& MiniAudio::GetWaveformType(const int id)
     {
         return m_waveforms.at(id).Get()->config.type;
+    }
+
+    void MiniAudio::SetNoiseCallback(std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)>callbackFunc)
+    {
+        m_noise_callback = callbackFunc;
+    }
+
+    void MiniAudio::ClearNoiseCallback()
+    {
+        MiniAudio::m_noise_left_channel = 0.0f;
+        MiniAudio::m_noise_right_channel = 0.0f;
+        m_noise_callback = {};
     }
 
     ma_device* MiniAudio::GetDevice()
