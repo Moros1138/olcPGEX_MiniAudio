@@ -111,6 +111,11 @@ namespace olc
         static bool m_background_playback;
         static std::vector<float> m_callback_buffer;
 
+    public: // loading routines
+        const int LoadSound(const std::string& path, olc::ResourcePack* pack = nullptr, bool playOnce = false);
+    private:
+        const int find_or_create_empty_sound_slot();
+
     private:
         ma_device m_device;
         ma_device_config m_device_config;
@@ -263,6 +268,67 @@ namespace olc
         memcpy(pOutput, m_callback_buffer.data(), m_callback_buffer.size() * sizeof(float));
     }
 
+    const int MiniAudio::LoadSound(const std::string& path, olc::ResourcePack* pack, bool playOnce)
+    {
+        int id = find_or_create_empty_sound_slot();
+
+        /**
+         * if we haven't already create a sound file buffer for this
+         * path, let's create it
+         */
+        if(m_sound_file_buffers.find(path) == m_sound_file_buffers.end())
+        {
+            m_sound_file_buffers[path] = SoundFileBuffer(&m_engine);
+        }
+        
+        m_sound_file_buffers.at(path).Load(path, pack);
+        
+        if(ma_sound_init_from_file(&m_engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, &m_sounds.at(id)->m_sound) != MA_SUCCESS)
+            throw std::runtime_error{"PGEX_MiniAudio: failed to initialize a sound"};
+        
+        /**
+         * sounds with the play once flag set will be automatically
+         * unloaded when it has finished it's playback.
+         */
+        m_sounds.at(id)->m_play_once = playOnce;
+
+        /**
+         * used to synchronise the underlying sound file buffers
+         */
+        m_sounds.at(id)->m_path = path;
+
+        /**
+         * cache the lengths of the sound because this is an expensive operation, do it once
+         */
+        ma_sound_get_length_in_pcm_frames(&m_sounds[id]->m_sound, &m_sounds[id]->m_length_in_pcm_frames);
+        ma_sound_get_length_in_seconds(&m_sounds[id]->m_sound, &m_sounds[id]->m_length_in_seconds);
+        
+        PGEX_MA_LOG(m_sounds.at(id)->string());
+        return id;
+    }
+
+    const int MiniAudio::find_or_create_empty_sound_slot()
+    {
+        /**
+         * look for empty slots for re-use
+         */
+        for(int i = 0; i < m_sounds.size(); i++)
+        {
+            if(m_sounds[i] == nullptr)
+            {
+                m_sounds.at(i) = new Sound();
+                return i;
+            }
+                
+        }
+
+        /**
+         * create a new slot
+         */
+        int i = m_sounds.size();
+        m_sounds.push_back(new Sound());
+        return i;
+    }
 
     SoundFileBuffer::SoundFileBuffer()
         : m_engine(nullptr), m_loaded(false)
