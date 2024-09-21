@@ -104,23 +104,70 @@ namespace olc
     class MiniAudio : public olc::PGEX
     {
     public:
+        std::string name = "olcPGEX_MiniAudio v2.0";
+    
+    public:
         MiniAudio();
         ~MiniAudio();
         virtual bool OnBeforeUserUpdate(float& fElapsedTime) override;
         static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+    
+    public: // static variables
         static bool m_background_playback;
         static std::vector<float> m_callback_buffer;
+
+    public: // configuration
+        void SetBackgroundPlay(const bool state);
 
     public: // loading routines
         const int LoadSound(const std::string& path, olc::ResourcePack* pack = nullptr, bool playOnce = false);
         void UnloadSound(const int id);
     
     public: // playback routines
-        void Play(const int id, bool looping = false);
+        // plays a sample, can be set to loop
+        void Play(const int id, const bool looping = false);
+        // plays a sound file, as a one off, and automatically unloads it
         const int Play(const std::string& path, olc::ResourcePack* pack = nullptr);
+        // stops a sample, rewinds to beginning
         void Stop(const int id);
+        // pauses a sample, does not change position
         void Pause(const int id);
+        // toggle between play and pause
         void Toggle(const int id);
+
+    public: // seeking controls
+        // seek to the provided position in the sound, by milliseconds
+        void Seek(const int id, const ma_uint64 milliseconds);
+        // seek to the provided position in the sound, by float 0.f is beginning, 1.0f is end
+        void Seek(const int id, const float& location);
+        // seek forward from current position by the provided time
+        void Forward(const int id, const ma_uint64 milliseconds);
+        // seek forward from current position by the provided time
+        void Rewind(const int id, const ma_uint64 milliseconds);
+
+    public: // expression controls
+        // set volume of a sound, 0.0f is mute, 1.0f is full
+        void SetVolume(const int id, const float& volume);
+        // set pan of a sound, -1.0f is left, 1.0f is right, 0.0f is center
+        void SetPan(const int id, const float& pan);
+        // set pitch of a sound, 1.0f is normal
+        void SetPitch(const int id, const float& pitch);
+    
+    public: // misc information
+        // determine if a sound is playing
+        bool IsPlaying(const int id);
+        // gets the current position in the sound, in milliseconds
+        ma_uint64 GetCursorMilliseconds(const int id);
+        // gets the current position in the sound, as a float between 0.0f and 1.0f
+        float GetCursorFloat(const int id);
+        // get the current number of active "one off" sounds 
+        int GetOneOffCount();
+
+    public: // advanced features
+        ma_device* GetDevice();
+        ma_engine* GetEngine();
+        ma_resource_manager* GetResourceManager();
+        ma_sound* GetSound(const int id);
 
     private:
         const int find_or_create_empty_sound_slot();
@@ -136,7 +183,7 @@ namespace olc
         ma_engine_config m_engine_config;
         
         bool m_initialized = false;
-
+        int m_count_play_once_sounds = 0;
         std::vector<Sound*> m_sounds;
         std::unordered_map<std::string, SoundFileBuffer> m_sound_file_buffers;
     };
@@ -167,6 +214,105 @@ void PGEX_MA_LOG(const std::string_view& message = "", std::source_location loca
 
 namespace olc
 {
+
+#pragma region SoundFileBuffer
+
+    SoundFileBuffer::SoundFileBuffer()
+        : m_engine(nullptr), m_loaded(false)
+    {
+    }
+
+    SoundFileBuffer::SoundFileBuffer(ma_engine* engine)
+        : m_engine(engine), m_loaded(false)
+    {
+    }
+    
+    SoundFileBuffer::~SoundFileBuffer()
+    {
+    }
+
+    bool SoundFileBuffer::Load(const std::string& path, olc::ResourcePack* pack)
+    {
+        if(m_loaded)
+        {
+            m_count++;
+            PGEX_MA_LOG(std::format("reusing sound file buffer at path: {}", m_path));
+            return true;
+        }
+
+        if(pack != nullptr)
+        {
+            PGEX_MA_LOG("loading sound file via olc::ResourcePack");
+            
+            if(!pack->Loaded())
+                throw std::runtime_error{std::format("failed to load sound from: {} - olc::ResourcePack", path)};
+                
+            m_buffer = pack->GetFileBuffer(path).vMemory;
+        }
+        else
+        {
+            PGEX_MA_LOG("loading sound file via ifstream");
+
+            std::ifstream file(path, std::ios::binary | std::ios::ate);
+            
+            if(!file.is_open())
+                throw std::runtime_error{std::format("failed to load sound from: {}", path)};
+
+            m_buffer.resize(file.tellg(), 0);
+            file.seekg(0, std::ios::beg);
+        
+            file.read(m_buffer.data(), m_buffer.size());
+        }
+
+        if(ma_resource_manager_register_encoded_data(m_engine->pResourceManager, path.c_str(), m_buffer.data(), m_buffer.size()) != MA_SUCCESS)
+            return false;
+
+        m_count = 1;
+        m_loaded = true;
+        m_path = path;
+        
+        return true;
+    }
+
+    void SoundFileBuffer::Unload()
+    {
+        if(!m_loaded)
+            throw std::runtime_error{"tried to unload a sound file buffer which isn't loaded"};
+
+        m_count--;
+        
+        PGEX_MA_LOG(std::format("decreased count of: {} to {}", m_path, m_count));
+        
+        if(m_count == 0)
+        {
+            if(ma_resource_manager_unregister_data(m_engine->pResourceManager, m_path.c_str()))
+                throw std::runtime_error{"failed to unregister data from the resource manager"};
+
+            m_loaded = false;
+            
+            PGEX_MA_LOG(std::format("unloaded sound file buffer with path: {}", m_path));
+        }
+    }
+
+#pragma endregion
+
+#pragma region Sound
+
+    const std::string Sound::string()
+    {
+        return std::format(
+            "{}, frames({}) seconds({}) play_once({})",
+            m_path,
+            m_length_in_pcm_frames,
+            m_length_in_seconds,
+            m_play_once
+        );
+    }
+
+#pragma endregion
+
+#pragma region MiniAudio
+
     bool MiniAudio::m_background_playback = false;
     std::vector<float> MiniAudio::m_callback_buffer;
     
@@ -253,6 +399,7 @@ namespace olc
                 continue;
             
             UnloadSound(i);
+            m_count_play_once_sounds--;
         }
         
         return false;
@@ -306,6 +453,11 @@ namespace olc
          * Copy the results to the output buffer
          */
         memcpy(pOutput, m_callback_buffer.data(), m_callback_buffer.size() * sizeof(float));
+    }
+
+    void MiniAudio::SetBackgroundPlay(bool state)
+    {
+        MiniAudio::m_background_playback = state;
     }
 
     const int MiniAudio::LoadSound(const std::string& path, olc::ResourcePack* pack, bool playOnce)
@@ -382,7 +534,7 @@ namespace olc
         m_sounds.at(id) = nullptr;
     }
 
-    void MiniAudio::Play(const int id, bool looping)
+    void MiniAudio::Play(const int id, const bool looping)
     {
         if(ma_sound_is_playing(&m_sounds.at(id)->m_sound))
             return;
@@ -397,6 +549,7 @@ namespace olc
     {
         int id = LoadSound(path, pack, true);
         ma_sound_start(&m_sounds.at(id)->m_sound);
+        m_count_play_once_sounds++;
         return id;
     }
 
@@ -427,7 +580,115 @@ namespace olc
         
         ma_sound_start(&m_sounds.at(id)->m_sound);
     }
+
+    void MiniAudio::Seek(const int id, const ma_uint64 milliseconds)
+    {
+        ma_uint64 frame_to_seek_to = (milliseconds * DEVICE_SAMPLE_RATE) / 1000;
+        ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, frame_to_seek_to);
+    }
+
+    void MiniAudio::Seek(const int id, const float& location)
+    {
+        ma_uint64 frame_to_seek_to = m_sounds.at(id)->m_length_in_pcm_frames * location;
+        ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, frame_to_seek_to);
+    }
+
+    void MiniAudio::Forward(const int id, const ma_uint64 milliseconds)
+    {
+        ma_uint64 frame_to_seek_to;
+
+        // get the current position
+        ma_sound_get_cursor_in_pcm_frames(&m_sounds.at(id)->m_sound, &frame_to_seek_to);
+        
+        // calculate the step and add it to the current position
+        frame_to_seek_to += ((milliseconds * DEVICE_SAMPLE_RATE) / 1000);
+
+        // seek to the new position
+        ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, frame_to_seek_to);
+    }
+
+    void MiniAudio::Rewind(const int id, const ma_uint64 milliseconds)
+    {
+        ma_uint64 frame_to_seek_to;
+
+        // get the current position
+        ma_sound_get_cursor_in_pcm_frames(&m_sounds.at(id)->m_sound, &frame_to_seek_to);
+        
+        // calculate the step and subtract it to the current position
+        frame_to_seek_to -= ((milliseconds * DEVICE_SAMPLE_RATE) / 1000);
+
+        // seek to the new position
+        ma_sound_seek_to_pcm_frame(&m_sounds.at(id)->m_sound, frame_to_seek_to);
+    }
+
+    void MiniAudio::SetVolume(const int id, const float& volume)
+    {
+        ma_sound_set_volume(&m_sounds.at(id)->m_sound, std::clamp(volume, 0.0f, 1.0f));
+    }
+
+    void MiniAudio::SetPan(const int id, const float& pan)
+    {
+        ma_sound_set_pan(&m_sounds.at(id)->m_sound, std::clamp(pan, -1.0f, 1.0f));
+    }
+
+    void MiniAudio::SetPitch(const int id, const float& pitch)
+    {
+        ma_sound_set_pitch(&m_sounds.at(id)->m_sound, std::max({0.0f, pitch}));
+    }
+
+    bool MiniAudio::IsPlaying(const int id)
+    {
+        if(ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+            return true;
+        
+        return false;
+    }
     
+    ma_uint64 MiniAudio::GetCursorMilliseconds(const int id)
+    {
+        ma_uint64 cursor;
+        ma_sound_get_cursor_in_pcm_frames(&m_sounds.at(id)->m_sound, &cursor);
+        return (cursor * 1000) / DEVICE_SAMPLE_RATE;
+    }
+    
+    float MiniAudio::GetCursorFloat(const int id)
+    {
+        float cursor;
+        ma_sound_get_cursor_in_seconds(&m_sounds.at(id)->m_sound, &cursor);
+        return cursor / m_sounds.at(id)->m_length_in_seconds;
+    }
+
+    int MiniAudio::GetOneOffCount()
+    {
+        return m_count_play_once_sounds;
+    }
+
+    ma_device* MiniAudio::GetDevice()
+    {
+        return &m_device;
+    }
+
+    ma_engine* MiniAudio::GetEngine()
+    {
+        return &m_engine;
+    }
+
+    ma_resource_manager* MiniAudio::GetResourceManager()
+    {
+        return &m_resource_manager;
+    }
+
+    ma_sound* MiniAudio::GetSound(const int id)
+    {
+        if(id > (m_sounds.size() - 1))
+            return nullptr;
+
+        if(m_sounds.at(id) == nullptr)
+            return nullptr;
+        
+        return &m_sounds.at(id)->m_sound;
+    }
+
     const int MiniAudio::find_or_create_empty_sound_slot()
     {
         /**
@@ -451,87 +712,8 @@ namespace olc
         return i;
     }
 
-    SoundFileBuffer::SoundFileBuffer()
-        : m_engine(nullptr), m_loaded(false)
-    {
-    }
+#pragma endregion
 
-    SoundFileBuffer::SoundFileBuffer(ma_engine* engine)
-        : m_engine(engine), m_loaded(false)
-    {
-    }
-    
-    SoundFileBuffer::~SoundFileBuffer()
-    {
-    }
-
-    bool SoundFileBuffer::Load(const std::string& path, olc::ResourcePack* pack)
-    {
-        if(m_loaded)
-        {
-            m_count++;
-            PGEX_MA_LOG(std::format("reusing sound file buffer at path: {}", m_path));
-            return true;
-        }
-
-        if(pack != nullptr)
-        {
-            // TODO: robustify
-            m_buffer = pack->GetFileBuffer(path).vMemory;
-            PGEX_MA_LOG("loading sound file via olc::ResourcePack");
-        }
-        else
-        {
-            // TODO: robustify
-            std::ifstream file(path, std::ios::binary | std::ios::ate);
-            m_buffer.resize(file.tellg(), 0);
-            file.seekg(0, std::ios::beg);
-        
-            file.read(m_buffer.data(), m_buffer.size());
-            PGEX_MA_LOG("loading sound file via ifstream");    
-        }
-
-        if(ma_resource_manager_register_encoded_data(m_engine->pResourceManager, path.c_str(), m_buffer.data(), m_buffer.size()) != MA_SUCCESS)
-            return false;
-
-        m_count = 1;
-        m_loaded = true;
-        m_path = path;
-        
-        return true;
-    }
-
-    void SoundFileBuffer::Unload()
-    {
-        if(!m_loaded)
-            throw std::runtime_error{"tried to unload a sound file buffer which isn't loaded"};
-
-        m_count--;
-        
-        PGEX_MA_LOG(std::format("decreased count of: {} to {}", m_path, m_count));
-        
-        if(m_count == 0)
-        {
-            if(ma_resource_manager_unregister_data(m_engine->pResourceManager, m_path.c_str()))
-                throw std::runtime_error{"failed to unregister data from the resource manager"};
-
-            m_loaded = false;
-            
-            PGEX_MA_LOG(std::format("unloaded sound file buffer with path: {}", m_path));
-        }
-    }
-
-    const std::string Sound::string()
-    {
-        return std::format(
-            "{}, frames({}) seconds({}) play_once({})",
-            m_path,
-            m_length_in_pcm_frames,
-            m_length_in_seconds,
-            m_play_once
-        );
-    }
-    
 } // olc
 
 #endif
