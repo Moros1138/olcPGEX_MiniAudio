@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(olcPGEX_MiniAudio)
 
+# Options you can set via command-line
+option(HAS_TERMINAL "Show a terminal window for STDOUT/STDERR" ON)
 option(UPDATE_GIT_SUBMODULES "Update Git submodules" ON)
 
 if (UPDATE_GIT_SUBMODULES)
