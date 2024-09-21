@@ -625,12 +625,12 @@ namespace olc
          */
         if(m_noise_callback)
         {
-            for(int i = 0; i < frameCount * DEVICE_CHANNELS; i += 2)
+            for(int i = 0; i < frameCount; i++)
             {
                 m_noise_callback(m_noise_left_channel, m_noise_right_channel, 1.0f / DEVICE_SAMPLE_RATE);
 
-                m_engine_buffer[i    ] += m_noise_left_channel;
-                m_engine_buffer[i + 1] += m_noise_right_channel;
+                m_engine_buffer[(i * DEVICE_CHANNELS)] += m_noise_left_channel;
+                m_engine_buffer[(i * DEVICE_CHANNELS) + 1] += m_noise_right_channel;
             }
         }
         
