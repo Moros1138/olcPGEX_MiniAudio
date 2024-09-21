@@ -209,9 +209,6 @@ namespace olc
         // unload and free resources of a given waveform
         void UnloadWaveform(const int id);
 
-        //////
-        // getters
-        //////
         // whether or not a waveform is currently playing
         const bool IsWaveformPlaying(const int id);
         // returns waveform amplitude
@@ -224,8 +221,27 @@ namespace olc
         ma_waveform* GetWaveform(const int id);
     
     public: // noise generation
+        
+        /**
+         * set a noise callback function so your applicaiton
+         * can send sound update.
+         * 
+         * the callback provides two floating point values to
+         * override, one for the left channel and one for the
+         * right channel. fill them with raw audio data.
+         * 
+         * for periodic functions, you can reference the fElapsedTime
+         * variable to track how much time passed on the previous
+         * frame. Accumulate it somewhere to keep track of the total
+         * audio time.
+         * 
+         * if you do not change the output channels, the values
+         * previously used wil be played.
+         */
         void SetNoiseCallback(std::function<void(float& noiseLeftChannel, float& noiseRightChannel, const float fElapsedTime)>callbackFunc);
+        // clears the noise callback and resets the channel values to 0.0
         void ClearNoiseCallback();
+
     public: // advanced features
         ma_device* GetDevice();
         ma_engine* GetEngine();
@@ -248,6 +264,7 @@ namespace olc
         bool m_initialized = false;
         int m_count_play_once_sounds = 0;
         std::vector<Sound*> m_sounds;
+        
         std::unordered_map<std::string, SoundFileBuffer> m_sound_file_buffers;
     };
 }
