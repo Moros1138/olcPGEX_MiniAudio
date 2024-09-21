@@ -1,16 +1,14 @@
-name: Emscripten Build
+name: Build
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - develop
       - main
 
 jobs:
-  build:
+  emscripten:
+    name: Emscripten
     runs-on: ubuntu-latest
 
     steps:
@@ -39,3 +37,34 @@ jobs:
           emcmake cmake . -B emscripten-build
           cmake --build emscripten-build --config=Release
         shell: bash
+  
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+    
+      - name: Build
+        run: |
+          cmake . -B build -DCMAKE_BUILD_TYPE:String=Release
+          cmake --build build --config Release
+        shell: bash
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Build with Emscripten
+        run: |
+          cmake . -B build -DCMAKE_BUILD_TYPE:String=Release
+          cmake --build build --config Release
+    
+      
