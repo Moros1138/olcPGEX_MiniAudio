@@ -55,8 +55,8 @@ jobs:
             
       - name: Build
         env:
-          CC: clang
-          CXX: clang++
+          CC: gcc
+          CXX: g++
         run: |
           cmake . -B build -DTEST=1
           cmake --build build
