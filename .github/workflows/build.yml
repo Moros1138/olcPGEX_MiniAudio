@@ -50,8 +50,8 @@ jobs:
     
       - name: Build
         run: |
-          cmake . -B build -DCMAKE_BUILD_TYPE:String=Release
-          cmake --build build --config Release
+          cmake . -B build -DTEST=1
+          cmake --build build
         shell: bash
 
   windows:
