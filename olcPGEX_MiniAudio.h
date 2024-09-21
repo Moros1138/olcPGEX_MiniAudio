@@ -72,6 +72,8 @@
 #include <unordered_map>
 #include <vector>
 
+#undef DEVICE_TYPE //Stupid Windows
+
 namespace olc
 {
     
