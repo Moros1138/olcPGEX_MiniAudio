@@ -49,6 +49,9 @@ jobs:
           submodules: 'recursive'
     
       - name: Build
+        env:
+          CC: clang
+          CXX: clang++
         run: |
           cmake . -B build -DTEST=1
           cmake --build build
