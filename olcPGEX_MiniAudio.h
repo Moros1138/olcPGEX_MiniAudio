@@ -117,9 +117,11 @@ namespace olc
     
     public: // playback routines
         void Play(const int id, bool looping = false);
+        const int Play(const std::string& path, olc::ResourcePack* pack = nullptr);
         void Stop(const int id);
         void Pause(const int id);
         void Toggle(const int id);
+
     private:
         const int find_or_create_empty_sound_slot();
 
@@ -234,6 +236,25 @@ namespace olc
         #ifdef __EMSCRIPTEN__
         ma_resource_manager_process_next_job(&m_resource_manager);
         #endif
+        
+        /**
+         * look for the sounds we play once
+         * if they're done playing unload them
+         */
+        for(int i = 0; i < m_sounds.size(); i++)
+        {
+            if(m_sounds.at(i) == nullptr)
+                continue;
+            
+            if(!m_sounds.at(i)->m_play_once)
+                continue;
+            
+            if(ma_sound_is_playing(&m_sounds.at(i)->m_sound))
+                continue;
+            
+            UnloadSound(i);
+        }
+        
         return false;
     }
 
@@ -372,6 +393,12 @@ namespace olc
         ma_sound_start(&m_sounds.at(id)->m_sound);
     }
     
+    const int MiniAudio::Play(const std::string& path, olc::ResourcePack* pack)
+    {
+        int id = LoadSound(path, pack, true);
+        ma_sound_start(&m_sounds.at(id)->m_sound);
+        return id;
+    }
 
     void MiniAudio::Stop(const int id)
     {
