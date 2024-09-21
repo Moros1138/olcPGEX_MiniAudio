@@ -69,6 +69,7 @@
 #include <iostream>
 #include <source_location>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace olc
@@ -119,7 +120,11 @@ namespace olc
 
         ma_engine m_engine;
         ma_engine_config m_engine_config;
+        
         bool m_initialized = false;
+
+        std::vector<Sound*> m_sounds;
+        std::unordered_map<std::string, SoundFileBuffer> m_sound_file_buffers;
     };
 }
 
