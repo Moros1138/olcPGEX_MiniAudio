@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 3.10)
 
 project(olcPGEX_MiniAudio)
 
+# Options you can set via command-line
+option(HAS_TERMINAL "Show a terminal window for STDOUT/STDERR" ON)
 option(UPDATE_GIT_SUBMODULES "Update Git submodules" ON)
+option(TEST "Build In Test Mode" OFF)
 
 if (UPDATE_GIT_SUBMODULES)
     message(STATUS "Updating Git submodules...")
@@ -152,17 +155,23 @@ function(add_common_settings target)
     ######################################################################
     if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
         
+        if (TEST)
+            target_compile_definitions(${target} PRIVATE -DOLC_PGE_HEADLESS)
+        endif()
+
         # OpenGL
-        set(OpenGL_GL_PREFERENCE LEGACY)
-        find_package(OpenGL REQUIRED)
-        include_directories(${OpenGL_INCLUDE_DIRS})
-        target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
+        if (NOT TEST)
+            set(OpenGL_GL_PREFERENCE LEGACY)
+            find_package(OpenGL REQUIRED)
+            include_directories(${OpenGL_INCLUDE_DIRS})
+            target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
 
-        # X11
-        find_package(X11 REQUIRED)
-        target_link_libraries(${target} X11::X11)
+            # X11
+            find_package(X11 REQUIRED)
+            target_link_libraries(${target} X11::X11)
 
-        include_directories(${X11_INCLUDE_DIRS})
+            include_directories(${X11_INCLUDE_DIRS})
+        endif()
 
         # Threads
         find_package(Threads REQUIRED)
@@ -228,7 +237,8 @@ endfunction()
 add_executable(
     demo
     demo/demo.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h
@@ -237,7 +247,8 @@ add_executable(
 add_executable(
     demo_synthesis
     demo/demo_synthesis.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h
@@ -246,7 +257,8 @@ add_executable(
 add_executable(
     demo_waveform
     demo/demo_waveform.cpp
-    demo/common.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
     olcPGEX_MiniAudio.h
     third_party/olcPixelGameEngine/olcPixelGameEngine.h
     third_party/miniaudio/miniaudio.h

@@ -26,6 +26,7 @@ Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Em
 ### Loading Features
 * Loads WAV files
 * Loads MP3 files
+* Use ``olc::ResourcePack`` (as of v2.0)
 
 ### Configuration Features
 * Background Playback
@@ -50,19 +51,20 @@ Cross-Platform, out-of-the-box. Easily use in your Linux, Windows, MacOS, and Em
 * Get the current position in the sample, in milliseconds.
 * Get the current position in the sample, as float 0.0f is start, 1.0f is end.
 
-### Waveform Features
+### Waveform Features (as of v1.7)
 * Create sine, square, sawtooth, and triangle waves.
 * Load and play multiple waveform channels at the same time.
 * Modify waveform amplitudes, frequencies, and types in realtime.
 
-### Noise Generation Features
+### Noise Generation Features (as of v1.7)
 * Set a callback function to send and play raw audio data for potential sound synthesis.
 * Send raw data for both left and right stereo channels.
 * Track passage of audio frame time for oscillators / time-sensitive applications.
 
-*** Advanced Features, for those who want to use more of miniaudio
+###  Advanced Features, for those who want to use more of miniaudio
 * Get a pointer to the ma_device
 * Get a pointer to the ma_engine
+* Get a pointer to the ma_resource_manager (as of v2.0)
 * Get pointers to waveforms and sounds
 
 # Usage

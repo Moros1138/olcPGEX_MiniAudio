@@ -12,20 +12,24 @@ public:
     }
     
 public:
-
     bool OnUserCreate() override
     {
-        // Load a sample from a file, currently decodes WAV and MP3
-        // files, out-of-the-box without further coding or configuration.
-        // returns a sample ID (int), for future control calls.
+        /**
+         * load a sample from a file. currently decodes WAV and MP3
+         * files without further coding or configuration.
+         * 
+         * returns a sample ID (int), for control and expression calls.
+         */
         song1 = ma.LoadSound("assets/sounds/song1.mp3");
 
-        // This is here to demonstrate how the adventurous can exploit other features of miniaudio
-        // that hasn't been abstracted by the PGEX.
-        // 
-        // see how we get a pointer of the song1 sound?
-        ma_sound_set_position(ma.GetSounds()[song1], 0.0f, 0.0f, 0.0f);
-        std::cout << "This demo was built with the latest workflow.\n";
+        /**
+         * this is here to demonstrate how the adventurous can
+         * exploit other features of miniaudio that hasn't been
+         * abstracted by the PGEX
+         * 
+         * Here you get a pointer to a sample's ma_sound.
+         */
+        ma_sound_set_position(ma.GetSound(song1), 0.0f, 0.0f, 0.0f);
         return true;
     }
     
@@ -46,8 +50,11 @@ public:
 
         if(GetKey(olc::SPACE).bPressed)
         {
-            // Toggle takes a sample ID (int) and either starts playback or pauses playback
-            // depending on whether the sample is currently playing, or not.
+            /**
+             * Toggle takes a sample ID (int) and either
+             * starts playback or pauses playback depending
+             * on whether the sample is currently playing or not.
+             */
             ma.Toggle(song1);
         }
             
@@ -84,33 +91,46 @@ public:
             distance = 0.0f;
         }
         
-        // This is here to demonstrate how the adventurous can exploit other features of miniaudio
-        // that hasn't been abstracted by the PGEX.
+        /**
+         * this is here to demosntrate how the adventurous can exploit other
+         * features of miniaudio that haven't been abstracted by the PGEX.
+         */
         distance = std::clamp(distance, 0.0f, 100.0f);
         ma_engine_listener_set_position(ma.GetEngine(), 0, 0.0f, distance, 0.0f);
 
-        // Set pan, takes a sample ID (int), and a float
-        // -1.0 to 1.0 where 0 is center
-        pan    = std::clamp(pan,   -1.0f, 1.0f);
+        
+        /**
+         * SetPan takes a sample ID (int) and a float
+         * -1.0f to 1.0f where 0 is center.
+         */
+        pan = std::clamp(pan, -1.0f, 1.0f);
         ma.SetPan(song1, pan);
 
-        // Set pitch, takes a sample ID (int), and a float
-        // 1.0 is normal pitch
+        /**
+         * SetPitch takes a sample ID (int) and a float
+         * 1.0f is normal pitch.
+         */
         pitch  = std::clamp(pitch,  0.0f, 2.0f);
         ma.SetPitch(song1, pitch);
 
-        // Set volume, takes a sample ID (int), and a float
-        // 0.0 to 1.0 where 1.0 is full volume
+        /**
+         * SetVolume takes a sample ID (int) and a float
+         * 0.0f to 1.0f where 1.0f is full volume.
+         */
         volume = std::clamp(volume, 0.0f, 1.0f);
         ma.SetVolume(song1, volume);
         
-        // Gets the current playback position in the provided sample ID (int),
-        // returns float 0.0 to 1.0, nearer 1.0 is near the end
+        /**
+         * GetCursorFloat takes a sample ID (int) and returns
+         * a float 0.0f to 1.0f, nearer to 1.0f is nearer the end.
+         */
         seek = ma.GetCursorFloat(song1);
 
-        // Gets the current playback position in the provided sample ID (int),
-        // returns unsigned long long in milliseconds
-        cursor=ma.GetCursorMilliseconds(song1);
+        /**
+         * GetCursorMilliseconds takes a sample ID (int) and returns
+         * the current playback position, in milliseconds.
+         */
+        cursor = ma.GetCursorMilliseconds(song1);
 
         // Draw Instructions and Indicators
         Clear(olc::BLACK);
@@ -129,7 +149,7 @@ public:
             "\n"
             "Distance <" + std::to_string(distance) + "> Left, Right\n"
             "\n"
-            "One-Off Sounds <" + std::to_string(ma.GetOneOffSounds().size()) + ">   S\n" \
+            "One-Off Sounds <" + std::to_string(ma.GetOneOffCount()) + ">   S\n" \
             "\n" \
             "BackgroundPlay <" + ((backgroundPlay) ? "On": "Off") + "> K1\n",
         olc::WHITE, {0.5f, 0.5f});
@@ -173,7 +193,7 @@ public:
     float volume = 1.0f;
     float distance = 0.0f;
     bool backgroundPlay = false;
-    unsigned long long cursor = 0ull;
+    ma_uint64 cursor = 0ull;
 
 };
 
