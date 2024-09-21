@@ -491,12 +491,14 @@ namespace olc
         }
 
         PGEX_MA_LOG("uninitializing m_engine");
+        ma_engine_stop(&m_engine);
         ma_engine_uninit(&m_engine);
         
         PGEX_MA_LOG("uninitializing m_resource_manager");
         ma_resource_manager_uninit(&m_resource_manager);
         
         PGEX_MA_LOG("uninitializing m_device");
+        ma_device_stop(&m_device);
         ma_device_uninit(&m_device);
     }
 
