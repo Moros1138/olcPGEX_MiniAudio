@@ -113,6 +113,8 @@ namespace olc
 
     public: // loading routines
         const int LoadSound(const std::string& path, olc::ResourcePack* pack = nullptr, bool playOnce = false);
+        void UnloadSound(const int id);
+    
     private:
         const int find_or_create_empty_sound_slot();
 
@@ -199,6 +201,19 @@ namespace olc
 
     MiniAudio::~MiniAudio()
     {
+        PGEX_MA_LOG("unloading all sounds");
+
+        /**
+         * unload all sounds
+         */
+        for(int i = 0; i < m_sounds.size(); i++)
+        {
+            if(m_sounds.at(i) == nullptr)
+                continue;
+            
+            UnloadSound(i);
+        }
+
         PGEX_MA_LOG("uninitializing m_engine");
         ma_engine_uninit(&m_engine);
         
@@ -305,6 +320,41 @@ namespace olc
         
         PGEX_MA_LOG(m_sounds.at(id)->string());
         return id;
+    }
+
+    void MiniAudio::UnloadSound(const int id)
+    {
+        if(m_sounds.at(id) == nullptr)
+            throw std::runtime_error{std::format("tried to unload non-existent sound at id({})", id)};
+        
+        if(m_sound_file_buffers.find(m_sounds.at(id)->m_path) == m_sound_file_buffers.end())
+            throw std::runtime_error{std::format("tried to unload non-existent sound file buffer at path ({})", m_sounds.at(id)->m_path)};
+        
+        /**
+         * if the sound is playing, stop it
+         */
+        if(ma_sound_is_playing(&m_sounds.at(id)->m_sound))
+            ma_sound_stop(&m_sounds.at(id)->m_sound);
+        
+        /**
+         * let miniaudio perform it's uninitialization on the sound
+         */
+        ma_sound_uninit(&m_sounds.at(id)->m_sound);
+
+        /**
+         * unload the sound file buffer
+         */
+        m_sound_file_buffers.at(m_sounds.at(id)->m_path).Unload();
+
+        /**
+         * give the memory back to the os
+         */
+        delete m_sounds.at(id);
+
+        /**
+         * mark this slot as empy
+         */
+        m_sounds.at(id) = nullptr;
     }
 
     const int MiniAudio::find_or_create_empty_sound_slot()
