@@ -74,38 +74,41 @@
 
 namespace olc
 {
-    struct SoundFileBuffer
-    {
-        SoundFileBuffer();
-        SoundFileBuffer(ma_engine* engine);
-        ~SoundFileBuffer();
 
-        bool Load(const std::string& path, olc::ResourcePack* pack = nullptr);
-        void Unload();
-
-        std::vector<char> m_buffer;
-        int m_count = 0;
-        ma_engine* m_engine;
-        bool m_loaded = false;
-        std::string m_path;
-    };
-    
-    struct Sound
-    {
-        ma_sound m_sound;
-        ma_uint64 m_length_in_pcm_frames = 0;
-        float m_length_in_seconds = 0;
-        std::string m_path;
-        bool m_play_once = false;
-        
-        const std::string string();
-    };
     
     class MiniAudio : public olc::PGEX
     {
     public:
         std::string name = "olcPGEX_MiniAudio v2.0";
     
+    public: // structs
+        struct SoundFileBuffer
+        {
+            SoundFileBuffer();
+            SoundFileBuffer(ma_engine* engine);
+            ~SoundFileBuffer();
+
+            bool Load(const std::string& path, olc::ResourcePack* pack = nullptr);
+            void Unload();
+
+            std::vector<char> m_buffer;
+            int m_count = 0;
+            ma_engine* m_engine;
+            bool m_loaded = false;
+            std::string m_path;
+        };
+        
+        struct Sound
+        {
+            ma_sound m_sound;
+            ma_uint64 m_length_in_pcm_frames = 0;
+            float m_length_in_seconds = 0;
+            std::string m_path;
+            bool m_play_once = false;
+            
+            const std::string string();
+        };
+
     public:
         MiniAudio();
         ~MiniAudio();
@@ -217,21 +220,21 @@ namespace olc
 
 #pragma region SoundFileBuffer
 
-    SoundFileBuffer::SoundFileBuffer()
+    MiniAudio::SoundFileBuffer::SoundFileBuffer()
         : m_engine(nullptr), m_loaded(false)
     {
     }
 
-    SoundFileBuffer::SoundFileBuffer(ma_engine* engine)
+    MiniAudio::SoundFileBuffer::SoundFileBuffer(ma_engine* engine)
         : m_engine(engine), m_loaded(false)
     {
     }
     
-    SoundFileBuffer::~SoundFileBuffer()
+    MiniAudio::SoundFileBuffer::~SoundFileBuffer()
     {
     }
 
-    bool SoundFileBuffer::Load(const std::string& path, olc::ResourcePack* pack)
+    bool MiniAudio::SoundFileBuffer::Load(const std::string& path, olc::ResourcePack* pack)
     {
         if(m_loaded)
         {
@@ -274,7 +277,7 @@ namespace olc
         return true;
     }
 
-    void SoundFileBuffer::Unload()
+    void MiniAudio::SoundFileBuffer::Unload()
     {
         if(!m_loaded)
             throw std::runtime_error{"tried to unload a sound file buffer which isn't loaded"};
@@ -298,7 +301,7 @@ namespace olc
 
 #pragma region Sound
 
-    const std::string Sound::string()
+    const std::string MiniAudio::Sound::string()
     {
         return std::format(
             "{}, frames({}) seconds({}) play_once({})",
