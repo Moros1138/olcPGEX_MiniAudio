@@ -51,7 +51,7 @@ public:
         if(GetKey(olc::D).bHeld || GetKey(olc::RIGHT).bHeld) rotationVelocity += 1.0f;
 
         direction += rotationVelocity * 5.0f * fElapsedTime;
-        olc::vf2d directionVector = olc::vf2d{ std::cosf(direction), std::sinf(direction) };
+        olc::vf2d directionVector = olc::vf2d{ cosf(direction), sinf(direction) };
         olc::vf2d velocity = directionVector * forwardVelocity * 20.0f * fElapsedTime;
         position += velocity;
         
