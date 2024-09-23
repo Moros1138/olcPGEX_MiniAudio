@@ -1,5 +1,6 @@
 #include "olcPixelGameEngine.h"
 #include "olcPGEX_MiniAudio.h"
+#include <cmath>
 
 constexpr float thirtyFramesPerSecond = 1.0f / 30.f;
 
