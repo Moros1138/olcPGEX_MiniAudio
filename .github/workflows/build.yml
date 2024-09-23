@@ -48,10 +48,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install zlib and libpng without interaction
+      - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y zlib1g-dev libpng-dev          
+          sudo apt-get install -y zlib1g-dev libpng-dev libx11-dev libgl1-mesa-dev libglu1-mesa-dev
 
       - name: Set default gcc and g++ versions to latest
         run: |
@@ -63,7 +63,7 @@ jobs:
           CC: gcc
           CXX: g++
         run: |
-          cmake . -B build -DTEST=1
+          cmake . -B build
           cmake --build build
         shell: bash
 

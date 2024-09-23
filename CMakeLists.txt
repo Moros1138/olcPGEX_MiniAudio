@@ -6,7 +6,6 @@ project(olcPGEX_MiniAudio)
 # Options you can set via command-line
 option(HAS_TERMINAL "Show a terminal window for STDOUT/STDERR" ON)
 option(UPDATE_GIT_SUBMODULES "Update Git submodules" ON)
-option(TEST "Build In Test Mode" OFF)
 
 if (UPDATE_GIT_SUBMODULES)
     message(STATUS "Updating Git submodules...")
@@ -155,23 +154,17 @@ function(add_common_settings target)
     ######################################################################
     if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
         
-        if (TEST)
-            target_compile_definitions(${target} PRIVATE -DOLC_PGE_HEADLESS)
-        endif()
-
         # OpenGL
-        if (NOT TEST)
-            set(OpenGL_GL_PREFERENCE LEGACY)
-            find_package(OpenGL REQUIRED)
-            include_directories(${OpenGL_INCLUDE_DIRS})
-            target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
+        set(OpenGL_GL_PREFERENCE LEGACY)
+        find_package(OpenGL REQUIRED)
+        include_directories(${OpenGL_INCLUDE_DIRS})
+        target_link_libraries(${target} ${OpenGL_LIBRARIES} OpenGL::GL)
 
-            # X11
-            find_package(X11 REQUIRED)
-            target_link_libraries(${target} X11::X11)
+        # X11
+        find_package(X11 REQUIRED)
+        target_link_libraries(${target} X11::X11)
 
-            include_directories(${X11_INCLUDE_DIRS})
-        endif()
+        include_directories(${X11_INCLUDE_DIRS})
 
         # Threads
         find_package(Threads REQUIRED)
@@ -264,6 +257,17 @@ add_executable(
     third_party/miniaudio/miniaudio.h
 )
 
+add_executable(
+    demo_spatialization
+    demo/demo_spatialization.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
+    olcPGEX_MiniAudio.h
+    third_party/olcPixelGameEngine/olcPixelGameEngine.h
+    third_party/miniaudio/miniaudio.h
+)
+
+
 if (EMSCRIPTEN)
     # generate an HTML file
     set(CMAKE_EXECUTABLE_SUFFIX .html)
@@ -272,3 +276,4 @@ endif()
 add_common_settings(demo)
 add_common_settings(demo_synthesis)
 add_common_settings(demo_waveform)
+add_common_settings(demo_spatialization)
