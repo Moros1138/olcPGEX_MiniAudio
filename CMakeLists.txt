@@ -257,6 +257,17 @@ add_executable(
     third_party/miniaudio/miniaudio.h
 )
 
+add_executable(
+    demo_spatialization
+    demo/demo_spatialization.cpp
+    demo/olcPGEX_MiniAudio.cpp
+    demo/olcPixelGameEngine.cpp
+    olcPGEX_MiniAudio.h
+    third_party/olcPixelGameEngine/olcPixelGameEngine.h
+    third_party/miniaudio/miniaudio.h
+)
+
+
 if (EMSCRIPTEN)
     # generate an HTML file
     set(CMAKE_EXECUTABLE_SUFFIX .html)
@@ -265,3 +276,4 @@ endif()
 add_common_settings(demo)
 add_common_settings(demo_synthesis)
 add_common_settings(demo_waveform)
+add_common_settings(demo_spatialization)

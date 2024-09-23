@@ -8,6 +8,7 @@ for cross-platform.
 
 See the emscripten versions of the demos here:
 * [Main Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/).
+* [Spatialization Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/demo_spatialization.html).
 * [Waveform Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/demo_waveform.html).
 * [Synthesis Demo](https://www.moros1138.com/demos/olcPGEX_MiniAudio/demo_synthesis.html).
 
