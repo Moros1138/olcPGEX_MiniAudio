@@ -68,3 +68,15 @@ jobs:
           source: "emscripten-build/demo_synthesis.html,emscripten-build/demo_synthesis.js,emscripten-build/demo_synthesis.wasm,emscripten-build/demo_synthesis.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
+
+      - name: Deploy Spatialization Demo
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.REMOTE_SERVER_ADDR }}
+          username: ${{ secrets.REMOTE_SERVER_USER }}
+          key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
+          port: ${{ secrets.REMOTE_SERVER_PORT }}
+          source: "emscripten-build/demo_spatialization.html,emscripten-build/demo_spatialization.js,emscripten-build/demo_spatialization.wasm,emscripten-build/demo_spatialization.data"
+          target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
+          strip_components: 1
+
