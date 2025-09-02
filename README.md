@@ -117,7 +117,11 @@ Then use them in your OnUserUpdate, like so
 
 For Windows MSVC the instructions match any other olcPixelGameEngine!
 
-For Emscripten, add ``-sSTACK_SIZE=131072`` to the build command. This doubles the default stack size used by emscripten. Without it, emscripten runs out of stack space causing it enter a forever loop with "index out of bounds" errors and exception!
+For Emscripten, add ``-sEXPORTED_RUNTIME_METHODS=HEAPF32 -sSTACK_SIZE=131072`` to the build command.
+
+The HEAPF32 is required to be exported. I don't know why, but this is particularly necessary for more recent versions of emscripten.
+
+The increased stack size is to prevent emscripten running out of stack space causing it enter a forever loop with "index out of bounds" errors and exception!
 
 For Linux, add ``-ldl`` to the build command..
 
