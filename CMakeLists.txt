@@ -201,6 +201,7 @@ function(add_common_settings target)
         
         target_link_options(${target} PRIVATE -sALLOW_MEMORY_GROWTH=1)
         target_link_options(${target} PRIVATE -sSTACK_SIZE=131072)
+        target_link_options(${target} PRIVATE -sEXPORTED_RUNTIME_METHODS=HEAPF32)
         target_link_options(${target} PRIVATE -sMAX_WEBGL_VERSION=2)
         target_link_options(${target} PRIVATE -sMIN_WEBGL_VERSION=2)
         target_link_options(${target} PRIVATE -sUSE_LIBPNG=1)
