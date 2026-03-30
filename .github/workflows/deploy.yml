@@ -43,7 +43,7 @@ jobs:
           port: ${{ secrets.REMOTE_SERVER_PORT }}
           source: "build/demos/demo.html,build/demos/demo.js,build/demos/demo.wasm,build/demos/demo.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy Waveform Demo
         uses: appleboy/scp-action@v0.1.7
@@ -54,7 +54,7 @@ jobs:
           port: ${{ secrets.REMOTE_SERVER_PORT }}
           source: "build/demos/demo_waveform.html,build/demos/demo_waveform.js,build/demos/demo_waveform.wasm,build/demos/demo_waveform.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy Synthesis Demo
         uses: appleboy/scp-action@v0.1.7
@@ -65,7 +65,7 @@ jobs:
           port: ${{ secrets.REMOTE_SERVER_PORT }}
           source: "build/demos/demo_synthesis.html,build/demos/demo_synthesis.js,build/demos/demo_synthesis.wasm,build/demos/demo_synthesis.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy Spatialization Demo
         uses: appleboy/scp-action@v0.1.7
@@ -76,5 +76,5 @@ jobs:
           port: ${{ secrets.REMOTE_SERVER_PORT }}
           source: "build/demos/demo_spatialization.html,build/demos/demo_spatialization.js,build/demos/demo_spatialization.wasm,build/demos/demo_spatialization.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
-          strip_components: 1
+          strip_components: 2
 
