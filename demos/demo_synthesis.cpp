@@ -97,27 +97,27 @@ public:
 			}
 		}
 
-		if(GetKey(olc::UP).bPressed)
+		if(GetKey(olc::Key::UP).bPressed)
 			selectedInstrumentInd = (selectedInstrumentInd + 1) % instruments.size();
 
-		if(GetKey(olc::DOWN).bPressed)
+		if(GetKey(olc::Key::DOWN).bPressed)
 		{
 			selectedInstrumentInd--;
 			while(selectedInstrumentInd < 0)
 				selectedInstrumentInd += instruments.size();
 		}
 
-		if(GetKey(olc::RIGHT).bHeld)
+		if(GetKey(olc::Key::RIGHT).bHeld)
 			volume = std::min(1.f, volume + 1.f * fElapsedTime);
-		if(GetKey(olc::LEFT).bHeld)
+		if(GetKey(olc::Key::LEFT).bHeld)
 			volume = std::max(0.f, volume - 1.f * fElapsedTime);
 
-		if(GetKey(olc::O).bHeld)
+		if(GetKey(olc::Key::O).bHeld)
 			pan = std::max(-1.f, pan - 1.f * fElapsedTime);
-		if(GetKey(olc::P).bHeld)
+		if(GetKey(olc::Key::P).bHeld)
 			pan = std::min(1.f, pan + 1.f * fElapsedTime);
 
-		if(GetKey(olc::R).bPressed)
+		if(GetKey(olc::Key::R).bPressed)
 		{
 			selectedInstrumentInd = 0;
 			volume = 0.1f;
@@ -150,7 +150,7 @@ public:
         #if defined(__EMSCRIPTEN__)
             return true;
         #else
-            return !GetKey(olc::ESCAPE).bPressed;
+            return !GetKey(olc::Key::ESCAPE).bPressed;
         #endif
     }
 
@@ -186,23 +186,23 @@ public:
 
     std::array<Note,NOTE_COUNT>notes{
         Note
-        {"G#", olc::A,		-1}, //This is not a typo. javid's original scale formula starts at "A", so this will retrieve the note ID prior to that one.
-        {"A" , olc::Z,		0},
-        {"A#", olc::S,		1},
-        {"B" , olc::X,		2},
-        {"C" , olc::C,		3},
-        {"C#", olc::F,		4},
-        {"D" , olc::V,		5},
-        {"D#", olc::G,		6},
-        {"E" , olc::B,		7},
-        {"F" , olc::N,		8},
-        {"F#", olc::J,		9},
-        {"G" , olc::M,		10},
-        {"G#", olc::K,		11},
-        {"A" , olc::COMMA,	12},
-        {"A#", olc::L,		13},
-        {"B" , olc::PERIOD,	14},
-        {"C" , olc::OEM_2,	15},
+        {"G#", olc::Key::A,		-1}, //This is not a typo. javid's original scale formula starts at "A", so this will retrieve the note ID prior to that one.
+        {"A" , olc::Key::Z,		0},
+        {"A#", olc::Key::S,		1},
+        {"B" , olc::Key::X,		2},
+        {"C" , olc::Key::C,		3},
+        {"C#", olc::Key::F,		4},
+        {"D" , olc::Key::V,		5},
+        {"D#", olc::Key::G,		6},
+        {"E" , olc::Key::B,		7},
+        {"F" , olc::Key::N,		8},
+        {"F#", olc::Key::J,		9},
+        {"G" , olc::Key::M,		10},
+        {"G#", olc::Key::K,		11},
+        {"A" , olc::Key::COMMA,	12},
+        {"A#", olc::Key::L,		13},
+        {"B" , olc::Key::PERIOD,	14},
+        {"C" , olc::Key::OEM_2,	15},
     };
 
 	int selectedInstrumentInd{};
@@ -351,6 +351,7 @@ public:
 	//An abstract struct for other instruments
 	struct Instrument
 	{
+		virtual ~Instrument() = default;
 		float volume;
 		std::string name;
 		EnvelopeADSR env;
@@ -369,7 +370,7 @@ public:
 			volume = 1.0;
 			name = "Bell";
 		}
-
+		
 		virtual float sound(const float time, Note&n, bool &noteFinished) override
 		{
 			float amplitude = envelope(time, env, n.on, n.off);
