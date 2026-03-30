@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
 
       - name: Set up Python (required for Emscripten)
         uses: actions/setup-python@v5
@@ -32,8 +30,8 @@ jobs:
       - name: Build with Emscripten
         run: |
           source emsdk/emsdk_env.sh
-          emcmake cmake . -B emscripten-build -DCMAKE_BUILD_TYPE:String=Debug
-          cmake --build emscripten-build --config Debug
+          emcmake cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build --config Debug
         shell: bash
 
       - name: Deploy Main Demo
@@ -43,7 +41,7 @@ jobs:
           username: ${{ secrets.REMOTE_SERVER_USER }}
           key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
           port: ${{ secrets.REMOTE_SERVER_PORT }}
-          source: "emscripten-build/demo.html,emscripten-build/demo.js,emscripten-build/demo.wasm,emscripten-build/demo.data"
+          source: "build/demos/demo.html,build/demos/demo.js,build/demos/demo.wasm,build/demos/demo.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
 
@@ -54,7 +52,7 @@ jobs:
           username: ${{ secrets.REMOTE_SERVER_USER }}
           key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
           port: ${{ secrets.REMOTE_SERVER_PORT }}
-          source: "emscripten-build/demo_waveform.html,emscripten-build/demo_waveform.js,emscripten-build/demo_waveform.wasm,emscripten-build/demo_waveform.data"
+          source: "build/demos/demo_waveform.html,build/demos/demo_waveform.js,build/demos/demo_waveform.wasm,build/demos/demo_waveform.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
 
@@ -65,7 +63,7 @@ jobs:
           username: ${{ secrets.REMOTE_SERVER_USER }}
           key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
           port: ${{ secrets.REMOTE_SERVER_PORT }}
-          source: "emscripten-build/demo_synthesis.html,emscripten-build/demo_synthesis.js,emscripten-build/demo_synthesis.wasm,emscripten-build/demo_synthesis.data"
+          source: "build/demos/demo_synthesis.html,build/demos/demo_synthesis.js,build/demos/demo_synthesis.wasm,build/demos/demo_synthesis.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
 
@@ -76,7 +74,7 @@ jobs:
           username: ${{ secrets.REMOTE_SERVER_USER }}
           key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
           port: ${{ secrets.REMOTE_SERVER_PORT }}
-          source: "emscripten-build/demo_spatialization.html,emscripten-build/demo_spatialization.js,emscripten-build/demo_spatialization.wasm,emscripten-build/demo_spatialization.data"
+          source: "build/demos/demo_spatialization.html,build/demos/demo_spatialization.js,build/demos/demo_spatialization.wasm,build/demos/demo_spatialization.data"
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 1
 
