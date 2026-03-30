@@ -37,18 +37,18 @@ public:
     {
         fElapsedTime = (fElapsedTime > thirtyFramesPerSecond) ? thirtyFramesPerSecond : fElapsedTime;
 
-        if(GetKey(olc::K1).bPressed)
+        if(GetKey(olc::Key::K1).bPressed)
         {
             backgroundPlay = !backgroundPlay;
             ma.SetBackgroundPlay(backgroundPlay);
         }
 
-        if(GetKey(olc::S).bPressed)
+        if(GetKey(olc::Key::S).bPressed)
         {
             ma.Play("assets/sounds/SampleA.wav");
         }
 
-        if(GetKey(olc::SPACE).bPressed)
+        if(GetKey(olc::Key::SPACE).bPressed)
         {
             /**
              * Toggle takes a sample ID (int) and either
@@ -58,32 +58,32 @@ public:
             ma.Toggle(song1);
         }
             
-        if(GetKey(olc::MINUS).bHeld)
+        if(GetKey(olc::Key::MINUS).bHeld)
             pan -= 1.0f * fElapsedTime;
             
-        if(GetKey(olc::EQUALS).bHeld)
+        if(GetKey(olc::Key::EQUALS).bHeld)
             pan += 1.0f * fElapsedTime;
 
-        if(GetKey(olc::OEM_4).bHeld)
+        if(GetKey(olc::Key::OEM_4).bHeld)
             pitch -= 1.0f * fElapsedTime;
 
-        if(GetKey(olc::OEM_6).bHeld)
+        if(GetKey(olc::Key::OEM_6).bHeld)
             pitch += 1.0f * fElapsedTime;
 
-        if(GetKey(olc::DOWN).bHeld)
+        if(GetKey(olc::Key::DOWN).bHeld)
             volume -= 1.0f * fElapsedTime;
             
-        if(GetKey(olc::UP).bHeld)
+        if(GetKey(olc::Key::UP).bHeld)
             volume += 1.0f * fElapsedTime;
         
-        if(GetKey(olc::LEFT).bHeld)
+        if(GetKey(olc::Key::LEFT).bHeld)
             distance -= 10.0f * fElapsedTime;
             
-        if(GetKey(olc::RIGHT).bHeld)
+        if(GetKey(olc::Key::RIGHT).bHeld)
             distance += 10.0f * fElapsedTime;
 
         // Reset pan, pitch, and volume
-        if(GetKey(olc::R).bPressed)
+        if(GetKey(olc::Key::R).bPressed)
         {
             pan = 0.0f;
             pitch = 1.0f;
@@ -176,7 +176,7 @@ public:
         #if defined(__EMSCRIPTEN__)
             return true;
         #else
-            return !GetKey(olc::ESCAPE).bPressed;
+            return !GetKey(olc::Key::ESCAPE).bPressed;
         #endif
     }
 

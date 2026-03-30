@@ -70,7 +70,7 @@ public:
     {
         fElapsedTime = (fElapsedTime > thirtyFramesPerSecond) ? thirtyFramesPerSecond : fElapsedTime;
 
-        if(GetKey(olc::SPACE).bPressed)
+        if(GetKey(olc::Key::SPACE).bPressed)
         {
             /**
              * start or stop playback of song1
@@ -81,10 +81,10 @@ public:
         float forwardVelocity = 0.0f;
         float rotationVelocity = 0.0f;
 
-        if(GetKey(olc::W).bHeld || GetKey(olc::UP).bHeld)    forwardVelocity  += 1.0f;
-        if(GetKey(olc::S).bHeld || GetKey(olc::DOWN).bHeld)  forwardVelocity  -= 1.0f;
-        if(GetKey(olc::A).bHeld || GetKey(olc::LEFT).bHeld)  rotationVelocity -= 1.0f;
-        if(GetKey(olc::D).bHeld || GetKey(olc::RIGHT).bHeld) rotationVelocity += 1.0f;
+        if(GetKey(olc::Key::W).bHeld || GetKey(olc::Key::UP).bHeld)    forwardVelocity  += 1.0f;
+        if(GetKey(olc::Key::S).bHeld || GetKey(olc::Key::DOWN).bHeld)  forwardVelocity  -= 1.0f;
+        if(GetKey(olc::Key::A).bHeld || GetKey(olc::Key::LEFT).bHeld)  rotationVelocity -= 1.0f;
+        if(GetKey(olc::Key::D).bHeld || GetKey(olc::Key::RIGHT).bHeld) rotationVelocity += 1.0f;
 
         rotation += rotationVelocity * 5.0f * fElapsedTime;
         /**
@@ -171,7 +171,7 @@ public:
         #if defined(__EMSCRIPTEN__)
             return true;
         #else
-            return !GetKey(olc::ESCAPE).bPressed;
+            return !GetKey(olc::Key::ESCAPE).bPressed;
         #endif
     }
 

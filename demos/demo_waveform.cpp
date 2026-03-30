@@ -45,15 +45,15 @@ public:
 
         bool keyPressed{false};
 
-        if(GetKey(olc::Q).bPressed)
+        if(GetKey(olc::Key::Q).bPressed)
         {
             selectedWaveform = ma_waveform_type((selectedWaveform+1)%4);
         }
-        if(GetKey(olc::UP).bPressed)
+        if(GetKey(olc::Key::UP).bPressed)
         {
             amplitude = std::min(1.f, amplitude + 0.1f);
         }
-        if(GetKey(olc::DOWN).bPressed)
+        if(GetKey(olc::Key::DOWN).bPressed)
         {
             amplitude = std::max(0.f, amplitude - 0.1f);
         }
@@ -107,7 +107,7 @@ public:
         #if defined(__EMSCRIPTEN__)
             return true;
         #else
-            return !GetKey(olc::ESCAPE).bPressed;
+            return !GetKey(olc::Key::ESCAPE).bPressed;
         #endif
     }
     bool OnUserDestroy() override
@@ -138,23 +138,23 @@ public:
 
     std::array<Note,NOTE_COUNT>notes{
         Note
-        {"G#",  207.65f,    olc::A},
-        {"A",   220.00f,    olc::Z},
-        {"A#",  233.08f,    olc::S},
-        {"B",   246.94f,    olc::X},
-        {"C",   261.63f,    olc::C},
-        {"C#",  277.18f,    olc::F},
-        {"D",   293.66f,    olc::V},
-        {"D#",  311.13f,    olc::G},
-        {"E",   329.63f,    olc::B},
-        {"F",   349.23f,    olc::N},
-        {"F#",  369.99f,    olc::J},
-        {"G",   392.00f,    olc::M},
-        {"G#",  415.30f,    olc::K},
-        {"A",   440.00f,    olc::COMMA},
-        {"A#",  466.16f,    olc::L},
-        {"B",   493.88f,    olc::PERIOD},
-        {"C",   523.25f,    olc::OEM_2},
+        {"G#",  207.65f,    olc::Key::A},
+        {"A",   220.00f,    olc::Key::Z},
+        {"A#",  233.08f,    olc::Key::S},
+        {"B",   246.94f,    olc::Key::X},
+        {"C",   261.63f,    olc::Key::C},
+        {"C#",  277.18f,    olc::Key::F},
+        {"D",   293.66f,    olc::Key::V},
+        {"D#",  311.13f,    olc::Key::G},
+        {"E",   329.63f,    olc::Key::B},
+        {"F",   349.23f,    olc::Key::N},
+        {"F#",  369.99f,    olc::Key::J},
+        {"G",   392.00f,    olc::Key::M},
+        {"G#",  415.30f,    olc::Key::K},
+        {"A",   440.00f,    olc::Key::COMMA},
+        {"A#",  466.16f,    olc::Key::L},
+        {"B",   493.88f,    olc::Key::PERIOD},
+        {"C",   523.25f,    olc::Key::OEM_2},
     };
 
     const std::unordered_map<ma_waveform_type,std::string>waveformToName
