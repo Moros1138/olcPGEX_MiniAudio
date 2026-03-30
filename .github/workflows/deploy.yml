@@ -78,3 +78,13 @@ jobs:
           target: ${{ secrets.REMOTE_SERVER_DIRECTORY }}
           strip_components: 2
 
+      - name: Post-deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_SERVER_ADDR }}
+          username: ${{ secrets.REMOTE_SERVER_USER }}
+          key: ${{ secrets.REMOTE_SERVER_SSH_KEY }}
+          port: ${{ secrets.REMOTE_SERVER_PORT }}
+          script: |
+            rm ${{ secrets.REMOTE_SERVER_DIRECTORY }}/index.html
+            mv ${{ secrets.REMOTE_SERVER_DIRECTORY }}/demo.html ${{ secrets.REMOTE_SERVER_DIRECTORY }}/index.html
